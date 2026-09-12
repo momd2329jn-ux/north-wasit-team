@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="صفحة العضو - فريق شمال واسط الثقافي التطوعي">
+
+    <title>حسابي | فريق شمال واسط الثقافي التطوعي</title>
+
+    <!-- خط عربي -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS العام -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- CSS صفحة العضو -->
+    <link rel="stylesheet" href="member.css">
+</head>
+
+
+<body class="member-page">
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="header">
+
+        <div class="container nav-container">
+
+            <a href="index.html" class="logo">
+
+                <div class="logo-icon">
+                    ش
+                </div>
+
+                <div class="logo-text">
+
+                    <strong>
+                        شمال واسط
+                    </strong>
+
+                    <span>
+                        الثقافي التطوعي
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <div class="member-header-actions">
+
+                <a href="index.html"
+                   class="back-home">
+                    الرئيسية
+                </a>
+
+                <button
+                    id="logoutBtn"
+                    class="logout-btn">
+
+                    تسجيل الخروج
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main>
+
+        <section class="member-section">
+
+            <div class="container">
+
+
+                <!-- التحميل -->
+
+                <div id="memberLoading"
+                     class="member-loading">
+
+                    <div class="loading-spinner"></div>
+
+                    <p>
+                        جاري تحميل بياناتك...
+                    </p>
+
+                </div>
+
+
+
+                <!-- بيانات العضو -->
+
+                <div id="memberData"
+                     class="member-content hidden">
+
+
+                    <!-- الترحيب -->
+
+                    <div class="member-welcome">
+
+                        <div>
+
+                            <span class="member-badge">
+                                ✦ عضو في الفريق
+                            </span>
+
+                            <h1>
+                                أهلاً بك،
+                                <span id="welcomeName">
+                                    العضو
+                                </span>
+                            </h1>
+
+                            <p>
+                                سعداء بانضمامك إلى
+                                فريق شمال واسط الثقافي التطوعي.
+                            </p>
+
+                        </div>
+
+
+                        <div class="member-avatar">
+                            <span id="avatarLetter">
+                                ع
+                            </span>
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- معلومات العضو -->
+
+                    <div class="member-card">
+
+                        <div class="member-card-header">
+
+                            <div>
+
+                                <span>
+                                    الملف الشخصي
+                                </span>
+
+                                <h2>
+                                    معلومات العضو
+                                </h2>
+
+                            </div>
+
+                            <div class="profile-icon">
+                                👤
+                            </div>
+
+                        </div>
+
+
+                        <div class="profile-grid">
+
+
+                            <!-- الاسم -->
+
+                            <div class="profile-item">
+
+                                <span class="profile-label">
+                                    الاسم الكامل
+                                </span>
+
+                                <strong id="memberFullName">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- الهاتف -->
+
+                            <div class="profile-item">
+
+                                <span class="profile-label">
+                                    رقم الهاتف
+                                </span>
+
+                                <strong id="memberPhone">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- تاريخ الميلاد -->
+
+                            <div class="profile-item">
+
+                                <span class="profile-label">
+                                    تاريخ الميلاد
+                                </span>
+
+                                <strong id="memberBirthDate">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- الجنس -->
+
+                            <div class="profile-item">
+
+                                <span class="profile-label">
+                                    الجنس
+                                </span>
+
+                                <strong id="memberGender">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- التحصيل الدراسي -->
+
+                            <div class="profile-item">
+
+                                <span class="profile-label">
+                                    التحصيل الدراسي
+                                </span>
+
+                                <strong id="memberEducation">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- الاختصاص -->
+
+                            <div class="profile-item">
+
+                                <span class="profile-label">
+                                    الاختصاص
+                                </span>
+
+                                <strong id="memberSpecialization">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- العمل -->
+
+                            <div class="profile-item">
+
+                                <span class="profile-label">
+                                    العمل / الوظيفة
+                                </span>
+
+                                <strong id="memberJob">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+
+                            <!-- البريد -->
+
+                            <div class="profile-item">
+
+                                <span class="profile-label">
+                                    البريد الإلكتروني
+                                </span>
+
+                                <strong id="memberEmail">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- رسالة -->
+
+                    <div class="member-note">
+
+                        <div class="note-icon">
+                            💜
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                أنت جزء من الأثر
+                            </h3>
+
+                            <p>
+                                مشاركتك معنا تساهم في بناء
+                                مجتمع أكثر وعيًا وتعاونًا.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer class="footer">
+
+        <div class="footer-bottom">
+
+            <p>
+                © <span id="currentYear"></span>
+                فريق شمال واسط الثقافي التطوعي
+                — جميع الحقوق محفوظة
+            </p>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- JavaScript -->
+
+    <script type="module"
+            src="member.js"></script>
+
+</body>
+
+</html>
