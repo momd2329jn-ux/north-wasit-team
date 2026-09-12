@@ -1,0 +1,374 @@
+/* =========================
+   MEMBER PAGE
+========================= */
+
+.member-page {
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.member-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.back-home {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.back-home:hover {
+    color: #6c4df6;
+    background: rgba(108, 77, 246, 0.08);
+}
+
+.logout-btn {
+    border: 0;
+    background: #111827;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.logout-btn:hover {
+    background: #6c4df6;
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   MEMBER SECTION
+========================= */
+
+.member-section {
+    min-height: calc(100vh - 160px);
+    padding: 70px 0;
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.member-loading {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    color: #6b7280;
+}
+
+.loading-spinner {
+    width: 45px;
+    height: 45px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #6c4df6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================
+   HIDDEN
+========================= */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================
+   WELCOME
+========================= */
+
+.member-content {
+    animation: memberFade 0.5s ease;
+}
+
+@keyframes memberFade {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.member-welcome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding: 35px;
+    border-radius: 24px;
+    background: white;
+    border: 1px solid #e5e7eb;
+}
+
+.member-badge {
+    display: inline-block;
+    padding: 6px 13px;
+    border-radius: 50px;
+    background: rgba(108, 77, 246, 0.1);
+    color: #6c4df6;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.member-welcome h1 {
+    color: #111827;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.4;
+    margin-top: 12px;
+}
+
+.member-welcome h1 span {
+    color: #6c4df6;
+}
+
+.member-welcome p {
+    color: #6b7280;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.member-avatar {
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #6c4df6;
+    color: white;
+    font-size: 36px;
+    font-weight: 800;
+    box-shadow: 0 15px 35px rgba(108, 77, 246, 0.25);
+}
+
+
+/* =========================
+   MEMBER CARD
+========================= */
+
+.member-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    padding: 35px;
+}
+
+.member-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.member-card-header span {
+    color: #6c4df6;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.member-card-header h2 {
+    color: #111827;
+    font-size: 24px;
+    margin-top: 4px;
+}
+
+.profile-icon {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: rgba(108, 77, 246, 0.1);
+    font-size: 22px;
+}
+
+
+/* =========================
+   PROFILE GRID
+========================= */
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.profile-item {
+    padding: 20px;
+    border-radius: 15px;
+    background: #f8fafc;
+    border: 1px solid #eef0f3;
+}
+
+.profile-label {
+    display: block;
+    color: #6b7280;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.profile-item strong {
+    display: block;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+
+/* =========================
+   NOTE
+========================= */
+
+.member-note {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 20px;
+    background: #111827;
+    color: white;
+}
+
+.note-icon {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    background: rgba(108, 77, 246, 0.25);
+    font-size: 22px;
+}
+
+.member-note h3 {
+    font-size: 17px;
+}
+
+.member-note p {
+    color: #9ca3af;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .nav-container {
+        min-height: 70px;
+    }
+
+    .member-header-actions {
+        gap: 6px;
+    }
+
+    .back-home {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+
+    .logout-btn {
+        font-size: 12px;
+        padding: 8px 11px;
+    }
+
+    .member-section {
+        padding: 40px 0;
+    }
+
+    .member-welcome {
+        flex-direction: column-reverse;
+        align-items: center;
+        text-align: center;
+        padding: 28px 20px;
+    }
+
+    .member-avatar {
+        width: 75px;
+        height: 75px;
+        font-size: 30px;
+    }
+
+    .member-welcome h1 {
+        font-size: 28px;
+    }
+
+    .member-card {
+        padding: 22px 18px;
+    }
+
+    .member-card-header {
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+
+    .member-card-header h2 {
+        font-size: 20px;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .member-note {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 430px) {
+
+    .logo-text strong {
+        font-size: 14px;
+    }
+
+    .logo-text span {
+        font-size: 10px;
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .member-header-actions {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .member-welcome h1 {
+        font-size: 25px;
+    }
+}

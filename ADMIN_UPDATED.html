@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        لوحة الإدارة | فريق شمال واسط الثقافي التطوعي
+    </title>
+
+    <link rel="stylesheet" href="STYLE_UPDATED.css">
+    <link rel="stylesheet" href="ADMIN_STYLE_UPDATED.css">
+</head>
+
+<body>
+
+    <!-- الهيدر -->
+
+    <header class="admin-header">
+
+        <div class="container admin-navbar">
+
+            <div class="admin-logo">
+
+                <div class="admin-logo-icon">
+                    ⚙️
+                </div>
+
+                <div>
+                    <h1>
+                        لوحة الإدارة
+                    </h1>
+
+                    <p>
+                        فريق شمال واسط الثقافي التطوعي
+                    </p>
+                </div>
+
+            </div>
+
+
+            <button
+                id="adminLogoutBtn"
+                class="btn btn-outline"
+                type="button"
+            >
+                تسجيل الخروج
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- المحتوى الرئيسي -->
+
+    <main class="admin-page">
+
+        <div class="container">
+
+
+            <!-- رسالة التحقق -->
+
+            <div
+                id="adminMessage"
+                class="admin-message"
+            >
+                جاري التحقق من صلاحية الإدارة...
+            </div>
+
+
+            <!-- لوحة الإدارة -->
+
+            <section
+                id="adminContent"
+                class="hidden"
+            >
+
+
+                <!-- عنوان اللوحة -->
+
+                <div class="admin-title">
+
+                    <span class="admin-badge">
+                        🛠️ الإدارة
+                    </span>
+
+                    <h2>
+                        إدارة فريق شمال واسط
+                    </h2>
+
+                    <p>
+                        من هنا تقدر تدير الأخبار والفعاليات وتشوف أعضاء الفريق.
+                    </p>
+
+                </div>
+
+
+                <!-- إضافة محتوى -->
+
+                <div class="admin-grid">
+
+
+                    <!-- إضافة خبر -->
+
+                    <div class="admin-card">
+
+                        <div class="admin-card-header">
+
+                            <div class="admin-card-icon">
+                                📰
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    نشر خبر جديد
+                                </h3>
+
+                                <p>
+                                    أضف آخر أخبار الفريق
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <form id="newsForm">
+
+                            <div class="form-group">
+
+                                <label for="newsTitle">
+                                    عنوان الخبر
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="newsTitle"
+                                    placeholder="اكتب عنوان الخبر"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="newsContent">
+                                    محتوى الخبر
+                                </label>
+
+                                <textarea
+                                    id="newsContent"
+                                    placeholder="اكتب تفاصيل الخبر هنا..."
+                                    required
+                                ></textarea>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary form-submit"
+                            >
+                                نشر الخبر
+                            </button>
+
+                        </form>
+
+                    </div>
+
+
+
+                    <!-- إضافة فعالية -->
+
+                    <div class="admin-card">
+
+                        <div class="admin-card-header">
+
+                            <div class="admin-card-icon activity-icon">
+                                🎯
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    إضافة فعالية
+                                </h3>
+
+                                <p>
+                                    أضف فعالية جديدة للفريق
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <form id="activityForm">
+
+                            <div class="form-group">
+
+                                <label for="activityTitle">
+                                    اسم الفعالية
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="activityTitle"
+                                    placeholder="اكتب اسم الفعالية"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="activityContent">
+                                    تفاصيل الفعالية
+                                </label>
+
+                                <textarea
+                                    id="activityContent"
+                                    placeholder="اكتب تفاصيل الفعالية هنا..."
+                                    required
+                                ></textarea>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary form-submit"
+                            >
+                                نشر الفعالية
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- إدارة الأخبار -->
+
+                <section class="admin-section">
+
+                    <div class="admin-section-header">
+
+                        <div>
+
+                            <span class="admin-badge">
+                                📰 الأخبار
+                            </span>
+
+                            <h2>
+                                إدارة الأخبار
+                            </h2>
+
+                            <p>
+                                الأخبار المنشورة حاليًا ويمكن حذف أي خبر بالخطأ.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="adminNewsList"
+                        class="admin-content-list"
+                    >
+
+                        <div class="members-loading">
+                            جاري تحميل الأخبار...
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- إدارة الفعاليات -->
+
+                <section class="admin-section">
+
+                    <div class="admin-section-header">
+
+                        <div>
+
+                            <span class="admin-badge">
+                                🎯 الفعاليات
+                            </span>
+
+                            <h2>
+                                إدارة الفعاليات
+                            </h2>
+
+                            <p>
+                                الفعاليات المنشورة حاليًا ويمكن حذف أي فعالية بالخطأ.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="adminActivitiesList"
+                        class="admin-content-list"
+                    >
+
+                        <div class="members-loading">
+                            جاري تحميل الفعاليات...
+                        </div>
+
+                    </div>
+
+                </section>
+
+<!-- معرض الصور -->
+
+<section class="admin-section">
+
+    <div class="admin-section-header">
+
+        <div>
+
+            <span class="admin-badge">
+                📸 المعرض
+            </span>
+
+            <h2>
+                معرض صور الفعاليات
+            </h2>
+
+            <p>
+                أضيفي صور فعاليات الفريق واحذفي الصور القديمة من هنا.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- إضافة صورة -->
+
+    <div class="admin-card">
+
+        <div class="admin-card-header">
+
+            <div class="admin-card-icon">
+                📷
+            </div>
+
+            <div>
+
+                <h3>
+                    إضافة صورة جديدة
+                </h3>
+
+                <p>
+                    اختاري صورة من الهاتف لإضافتها إلى المعرض.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form id="galleryForm">
+
+            <div class="form-group">
+
+                <label for="galleryTitle">
+                    وصف الصورة
+                </label>
+
+                <input
+                    type="text"
+                    id="galleryTitle"
+                    placeholder="مثلاً: فعالية ثقافية للفريق"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="galleryImage">
+                    صورة الفعالية
+                </label>
+
+                <input
+                    type="file"
+                    id="galleryImage"
+                    accept="image/*"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary form-submit"
+            >
+                📸 إضافة الصورة للمعرض
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- الصور الموجودة -->
+
+    <div
+        id="adminGalleryList"
+        class="admin-content-list"
+        style="margin-top: 25px;"
+    >
+
+        <div class="members-loading">
+            جاري تحميل صور المعرض...
+        </div>
+
+    </div>
+
+</section>
+
+                <!-- الأعضاء -->
+
+                <section class="admin-section">
+
+                    <div class="admin-section-header">
+
+                        <div>
+
+                            <span class="admin-badge">
+                                👥 الأعضاء
+                            </span>
+
+                            <h2>
+                                أعضاء الفريق
+                            </h2>
+
+                            <p>
+                                قائمة الأشخاص المسجلين في الفريق.
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            id="membersCount"
+                            class="members-count"
+                        >
+                            0 عضو
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="membersList"
+                        class="members-list"
+                    >
+
+                        <div class="members-loading">
+                            جاري تحميل الأعضاء...
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- رسالة التنبيه -->
+
+    <div
+        id="adminToast"
+        class="toast"
+    ></div>
+
+
+
+    <!-- الفوتر -->
+
+    <footer class="footer">
+
+        <div class="container footer-content">
+
+            <div>
+
+                <h3>
+                    فريق شمال واسط الثقافي التطوعي
+                </h3>
+
+                <p>
+                    ©
+                    <span id="currentYear"></span>
+                    جميع الحقوق محفوظة
+                </p>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <a href="INDEX_UPDATED.html">
+                    الرئيسية
+                </a>
+
+                <a href="MEMBER_UPDATED.html">
+                    حسابي
+                </a>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- JavaScript -->
+
+    <script
+        type="module"
+        src="ADMIN_SCRIPT_UPDATED.js"
+    ></script>
+
+</body>
+
+</html>
