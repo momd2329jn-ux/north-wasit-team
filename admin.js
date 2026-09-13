@@ -11,7 +11,8 @@ import {
     serverTimestamp,
     doc,
     getDoc,
-    deleteDoc
+    deleteDoc,
+    updateDoc
 } from "./firebase.js";
 
 
@@ -42,6 +43,9 @@ const activitiesList =
 
 const galleryList =
     document.getElementById("galleryList");
+
+const inquiriesList =
+    document.getElementById("inquiriesList");
 
 const membersCount =
     document.getElementById("membersCount");
@@ -122,7 +126,6 @@ function compressImage(file) {
                 let width = image.width;
                 let height = image.height;
 
-
                 if (width > maxWidth) {
 
                     height =
@@ -133,7 +136,6 @@ function compressImage(file) {
                     width =
                         maxWidth;
                 }
-
 
                 if (height > maxHeight) {
 
@@ -146,12 +148,10 @@ function compressImage(file) {
                         maxHeight;
                 }
 
-
                 const canvas =
                     document.createElement(
                         "canvas"
                     );
-
 
                 canvas.width =
                     Math.round(width);
@@ -159,10 +159,8 @@ function compressImage(file) {
                 canvas.height =
                     Math.round(height);
 
-
                 const context =
                     canvas.getContext("2d");
-
 
                 if (!context) {
 
@@ -175,7 +173,6 @@ function compressImage(file) {
                     return;
                 }
 
-
                 context.drawImage(
                     image,
                     0,
@@ -183,7 +180,6 @@ function compressImage(file) {
                     canvas.width,
                     canvas.height
                 );
-
 
                 const qualities = [
                     0.65,
@@ -193,9 +189,7 @@ function compressImage(file) {
                     0.28
                 ];
 
-
                 let result = "";
-
 
                 for (
                     const quality
@@ -208,7 +202,6 @@ function compressImage(file) {
                             quality
                         );
 
-
                     if (
                         result.length <=
                         550000
@@ -217,10 +210,8 @@ function compressImage(file) {
                     }
                 }
 
-
                 resolve(result);
             };
-
 
             image.onerror = () => {
 
@@ -231,11 +222,9 @@ function compressImage(file) {
                 );
             };
 
-
             image.src =
                 reader.result;
         };
-
 
         reader.onerror = () => {
 
@@ -245,7 +234,6 @@ function compressImage(file) {
                 )
             );
         };
-
 
         reader.readAsDataURL(file);
     });
@@ -267,10 +255,8 @@ async function checkAdmin(user) {
                 user.uid
             );
 
-
         const adminSnapshot =
             await getDoc(adminRef);
-
 
         return adminSnapshot.exists();
 
@@ -294,7 +280,6 @@ async function loadNews() {
 
     if (!newsList) return;
 
-
     try {
 
         const newsQuery =
@@ -309,17 +294,14 @@ async function loadNews() {
                 )
             );
 
-
         const snapshot =
             await getDocs(newsQuery);
-
 
         if (newsCount) {
 
             newsCount.textContent =
                 snapshot.size;
         }
-
 
         if (snapshot.empty) {
 
@@ -332,25 +314,20 @@ async function loadNews() {
             return;
         }
 
-
         newsList.innerHTML = "";
-
 
         snapshot.forEach((docSnap) => {
 
             const data =
                 docSnap.data();
 
-
             const item =
                 document.createElement(
                     "div"
                 );
 
-
             item.className =
                 "admin-content-row";
-
 
             item.innerHTML = `
                 <div>
@@ -370,32 +347,26 @@ async function loadNews() {
                 <button
                     type="button"
                     class="delete-btn"
-                    data-id="${docSnap.id}"
                 >
                     🗑️ حذف
                 </button>
             `;
 
-
-            const deleteButton =
-                item.querySelector(
+            item
+                .querySelector(
                     ".delete-btn"
+                )
+                .addEventListener(
+                    "click",
+                    () => {
+                        deleteNews(
+                            docSnap.id
+                        );
+                    }
                 );
-
-
-            deleteButton.addEventListener(
-                "click",
-                () => {
-                    deleteNews(
-                        docSnap.id
-                    );
-                }
-            );
-
 
             newsList.appendChild(item);
         });
-
 
     } catch (error) {
 
@@ -420,7 +391,6 @@ if (newsForm) {
 
             event.preventDefault();
 
-
             const title =
                 document
                     .getElementById(
@@ -428,7 +398,6 @@ if (newsForm) {
                     )
                     ?.value
                     .trim();
-
 
             const content =
                 document
@@ -438,7 +407,6 @@ if (newsForm) {
                     ?.value
                     .trim();
 
-
             if (!title || !content) {
 
                 showToast(
@@ -447,7 +415,6 @@ if (newsForm) {
 
                 return;
             }
-
 
             try {
 
@@ -464,17 +431,13 @@ if (newsForm) {
                     }
                 );
 
-
                 newsForm.reset();
-
 
                 showToast(
                     "تم نشر الخبر بنجاح ✅"
                 );
 
-
                 await loadNews();
-
 
             } catch (error) {
 
@@ -501,7 +464,6 @@ async function deleteNews(id) {
         return;
     }
 
-
     try {
 
         await deleteDoc(
@@ -512,14 +474,11 @@ async function deleteNews(id) {
             )
         );
 
-
         showToast(
             "تم حذف الخبر بنجاح 🗑️"
         );
 
-
         await loadNews();
-
 
     } catch (error) {
 
@@ -540,7 +499,6 @@ async function loadActivities() {
 
     if (!activitiesList) return;
 
-
     try {
 
         const activitiesQuery =
@@ -555,19 +513,16 @@ async function loadActivities() {
                 )
             );
 
-
         const snapshot =
             await getDocs(
                 activitiesQuery
             );
-
 
         if (activitiesCount) {
 
             activitiesCount.textContent =
                 snapshot.size;
         }
-
 
         if (snapshot.empty) {
 
@@ -580,25 +535,20 @@ async function loadActivities() {
             return;
         }
 
-
         activitiesList.innerHTML = "";
-
 
         snapshot.forEach((docSnap) => {
 
             const data =
                 docSnap.data();
 
-
             const item =
                 document.createElement(
                     "div"
                 );
 
-
             item.className =
                 "admin-content-row";
-
 
             item.innerHTML = `
                 <div>
@@ -623,7 +573,6 @@ async function loadActivities() {
                 </button>
             `;
 
-
             item
                 .querySelector(
                     ".delete-btn"
@@ -637,10 +586,8 @@ async function loadActivities() {
                     }
                 );
 
-
             activitiesList.appendChild(item);
         });
-
 
     } catch (error) {
 
@@ -665,7 +612,6 @@ if (activityForm) {
 
             event.preventDefault();
 
-
             const title =
                 document
                     .getElementById(
@@ -673,7 +619,6 @@ if (activityForm) {
                     )
                     ?.value
                     .trim();
-
 
             const content =
                 document
@@ -683,7 +628,6 @@ if (activityForm) {
                     ?.value
                     .trim();
 
-
             if (!title || !content) {
 
                 showToast(
@@ -692,7 +636,6 @@ if (activityForm) {
 
                 return;
             }
-
 
             try {
 
@@ -709,17 +652,13 @@ if (activityForm) {
                     }
                 );
 
-
                 activityForm.reset();
-
 
                 showToast(
                     "تم نشر الفعالية بنجاح ✅"
                 );
 
-
                 await loadActivities();
-
 
             } catch (error) {
 
@@ -746,7 +685,6 @@ async function deleteActivity(id) {
         return;
     }
 
-
     try {
 
         await deleteDoc(
@@ -757,14 +695,11 @@ async function deleteActivity(id) {
             )
         );
 
-
         showToast(
             "تم حذف الفعالية بنجاح 🗑️"
         );
 
-
         await loadActivities();
-
 
     } catch (error) {
 
@@ -793,7 +728,6 @@ if (galleryImage) {
             const file =
                 galleryImage.files[0];
 
-
             if (!file) {
 
                 if (imagePreview) {
@@ -804,10 +738,8 @@ if (galleryImage) {
                 return;
             }
 
-
             const url =
                 URL.createObjectURL(file);
-
 
             if (imagePreview) {
 
@@ -829,7 +761,6 @@ async function loadGallery() {
 
     if (!galleryList) return;
 
-
     try {
 
         const galleryQuery =
@@ -844,19 +775,16 @@ async function loadGallery() {
                 )
             );
 
-
         const snapshot =
             await getDocs(
                 galleryQuery
             );
-
 
         if (galleryCount) {
 
             galleryCount.textContent =
                 snapshot.size;
         }
-
 
         if (snapshot.empty) {
 
@@ -869,31 +797,28 @@ async function loadGallery() {
             return;
         }
 
-
         galleryList.innerHTML = "";
-
 
         snapshot.forEach((docSnap) => {
 
             const data =
                 docSnap.data();
 
-
             const item =
                 document.createElement(
                     "div"
                 );
 
-
             item.className =
                 "admin-content-row";
-
 
             item.innerHTML = `
                 <div class="gallery-admin-item">
 
                     <img
-                        src="${data.image}"
+                        src="${escapeHTML(
+                            data.image
+                        )}"
                         alt="${escapeHTML(
                             data.title
                         )}"
@@ -921,7 +846,6 @@ async function loadGallery() {
                 </button>
             `;
 
-
             item
                 .querySelector(
                     ".delete-btn"
@@ -935,10 +859,8 @@ async function loadGallery() {
                     }
                 );
 
-
             galleryList.appendChild(item);
         });
-
 
     } catch (error) {
 
@@ -963,7 +885,6 @@ if (galleryForm) {
 
             event.preventDefault();
 
-
             const title =
                 document
                     .getElementById(
@@ -972,11 +893,9 @@ if (galleryForm) {
                     ?.value
                     .trim();
 
-
             const file =
                 galleryImage
                     ?.files[0];
-
 
             if (!file) {
 
@@ -986,7 +905,6 @@ if (galleryForm) {
 
                 return;
             }
-
 
             if (
                 !file.type.startsWith(
@@ -1001,19 +919,16 @@ if (galleryForm) {
                 return;
             }
 
-
             try {
 
                 showToast(
                     "جاري تجهيز الصورة..."
                 );
 
-
                 const imageData =
                     await compressImage(
                         file
                     );
-
 
                 if (
                     imageData.length >
@@ -1026,7 +941,6 @@ if (galleryForm) {
 
                     return;
                 }
-
 
                 await addDoc(
                     collection(
@@ -1046,23 +960,18 @@ if (galleryForm) {
                     }
                 );
 
-
                 galleryForm.reset();
-
 
                 if (imagePreview) {
                     imagePreview.innerHTML =
                         "";
                 }
 
-
                 showToast(
                     "تمت إضافة الصورة بنجاح 📸"
                 );
 
-
                 await loadGallery();
-
 
             } catch (error) {
 
@@ -1071,9 +980,8 @@ if (galleryForm) {
                     error
                 );
 
-
                 if (
-                    error?.code 
+                    error?.code
                     ===
                     "permission-denied"
                 ) {
@@ -1106,7 +1014,6 @@ async function deleteGalleryImage(id) {
         return;
     }
 
-
     try {
 
         await deleteDoc(
@@ -1117,14 +1024,11 @@ async function deleteGalleryImage(id) {
             )
         );
 
-
         showToast(
             "تم حذف الصورة بنجاح 🗑️"
         );
 
-
         await loadGallery();
-
 
     } catch (error) {
 
@@ -1145,7 +1049,6 @@ async function loadMembers() {
 
     if (!membersList) return;
 
-
     try {
 
         const membersQuery =
@@ -1160,19 +1063,16 @@ async function loadMembers() {
                 )
             );
 
-
         const snapshot =
             await getDocs(
                 membersQuery
             );
-
 
         if (membersCount) {
 
             membersCount.textContent =
                 snapshot.size;
         }
-
 
         if (snapshot.empty) {
 
@@ -1185,40 +1085,32 @@ async function loadMembers() {
             return;
         }
 
-
         membersList.innerHTML = "";
-
 
         snapshot.forEach((docSnap) => {
 
             const data =
                 docSnap.data();
 
-
             const name =
                 data.fullName ||
                 "عضو بدون اسم";
-
 
             const email =
                 data.email ||
                 "لا يوجد بريد";
 
-
             const phone =
                 data.phone ||
                 "لا يوجد رقم";
-
 
             const row =
                 document.createElement(
                     "div"
                 );
 
-
             row.className =
                 "member-row";
-
 
             row.innerHTML = `
                 <div class="member-row-avatar">
@@ -1250,10 +1142,8 @@ async function loadMembers() {
                 </div>
             `;
 
-
             membersList.appendChild(row);
         });
-
 
     } catch (error) {
 
@@ -1264,6 +1154,384 @@ async function loadMembers() {
                 تعذر تحميل قائمة الأعضاء.
             </div>
         `;
+    }
+}
+
+
+/* =========================
+   استفسارات الأعضاء
+========================= */
+async function loadInquiries() {
+
+    if (!inquiriesList) return;
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "inquiries"
+                )
+            );
+
+
+        if (snapshot.empty) {
+
+            inquiriesList.innerHTML = `
+                <div class="empty-message">
+                    لا توجد استفسارات حاليًا.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const inquiries = [];
+
+
+        snapshot.forEach((docSnap) => {
+
+            inquiries.push({
+                id: docSnap.id,
+                ...docSnap.data()
+            });
+
+        });
+
+
+        /* ترتيب الأحدث أولاً */
+
+        inquiries.sort((a, b) => {
+
+            const timeA =
+                a.createdAt?.toMillis?.() || 0;
+
+            const timeB =
+                b.createdAt?.toMillis?.() || 0;
+
+            return timeB - timeA;
+
+        });
+
+
+        inquiriesList.innerHTML = "";
+
+
+        inquiries.forEach((data) => {
+
+            const status =
+                data.status ||
+                "pending";
+
+
+            let statusText =
+                "بانتظار الرد";
+
+
+            if (status === "answered") {
+
+                statusText =
+                    "تم الرد";
+
+            }
+
+
+            if (status === "closed") {
+
+                statusText =
+                    "مغلق";
+
+            }
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "admin-inquiry-card";
+
+
+            item.innerHTML = `
+
+                <div class="admin-inquiry-top">
+
+                    <div>
+
+                        <span class="inquiry-status ${escapeHTML(
+                            status
+                        )}">
+                            ${escapeHTML(
+                                statusText
+                            )}
+                        </span>
+
+                        <h3>
+                            ${escapeHTML(
+                                data.subject ||
+                                "بدون عنوان"
+                            )}
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="delete-btn inquiry-delete-btn"
+                    >
+                        🗑️ حذف
+                    </button>
+
+                </div>
+
+
+                <div class="admin-inquiry-member">
+
+                    <strong>
+                        ${escapeHTML(
+                            data.userName ||
+                            "عضو"
+                        )}
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(
+                            data.userEmail ||
+                            "لا يوجد بريد"
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="admin-inquiry-type">
+
+                    نوع الاستفسار:
+
+                    <strong>
+                        ${escapeHTML(
+                            data.type ||
+                            "عام"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="admin-inquiry-message">
+
+                    <p>
+                        ${escapeHTML(
+                            data.message ||
+                            ""
+                        )}
+                    </p>
+
+                </div>
+
+
+                ${
+                    data.reply
+                    ? `
+                        <div class="admin-inquiry-existing-reply">
+
+                            <strong>
+                                الرد الحالي:
+                            </strong>
+
+                            <p>
+                                ${escapeHTML(
+                                    data.reply
+                                )}
+                            </p>
+
+                        </div>
+                    `
+                    : ""
+                }
+
+
+                <div class="admin-inquiry-reply">
+
+                    <textarea
+                        class="inquiry-reply-input"
+                        placeholder="اكتبي رد الإدارة هنا..."
+                    >${escapeHTML(
+                        data.reply || ""
+                    )}</textarea>
+
+
+                    <button
+                        type="button"
+                        class="inquiry-reply-btn"
+                    >
+                        ↩️ ${
+                            data.reply
+                            ? "تعديل الرد"
+                            : "إرسال الرد"
+                        }
+                    </button>
+
+                </div>
+            `;
+
+
+            item
+                .querySelector(
+                    ".inquiry-reply-btn"
+                )
+                .addEventListener(
+                    "click",
+                    () => {
+
+                        replyToInquiry(
+                            data.id,
+                            item.querySelector(
+                                ".inquiry-reply-input"
+                            )
+                        );
+
+                    }
+                );
+
+
+            item
+                .querySelector(
+                    ".inquiry-delete-btn"
+                )
+                .addEventListener(
+                    "click",
+                    () => {
+
+                        deleteInquiry(
+                            data.id
+                        );
+
+                    }
+                );
+
+
+            inquiriesList.appendChild(
+                item
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "خطأ في تحميل الاستفسارات:",
+            error
+        );
+
+
+        inquiriesList.innerHTML = `
+            <div class="empty-message">
+                تعذر تحميل استفسارات الأعضاء.
+            </div>
+        `;
+    }
+}
+
+/* الرد على الاستفسار */
+
+async function replyToInquiry(
+    inquiryId,
+    textarea
+) {
+
+    const reply =
+        textarea?.value.trim();
+
+    if (!reply) {
+
+        showToast(
+            "اكتبي الرد أولًا."
+        );
+
+        return;
+    }
+
+    try {
+
+        await updateDoc(
+            doc(
+                db,
+                "inquiries",
+                inquiryId
+            ),
+            {
+                reply,
+                status: "answered",
+                repliedAt:
+                    serverTimestamp()
+            }
+        );
+
+        showToast(
+            "تم إرسال الرد بنجاح ✅"
+        );
+
+        await loadInquiries();
+
+    } catch (error) {
+
+        console.error(
+            "خطأ في إرسال الرد:",
+            error
+        );
+
+        showToast(
+            "تعذر إرسال الرد."
+        );
+    }
+}
+
+
+/* حذف استفسار */
+
+async function deleteInquiry(id) {
+
+    if (
+        !confirm(
+            "هل أنت متأكد من حذف هذا الاستفسار؟"
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        await deleteDoc(
+            doc(
+                db,
+                "inquiries",
+                id
+            )
+        );
+
+        showToast(
+            "تم حذف الاستفسار بنجاح 🗑️"
+        );
+
+        await loadInquiries();
+
+    } catch (error) {
+
+        console.error(
+            "خطأ في حذف الاستفسار:",
+            error
+        );
+
+        showToast(
+            "تعذر حذف الاستفسار."
+        );
     }
 }
 
@@ -1314,17 +1582,14 @@ onAuthStateChanged(
             return;
         }
 
-
         const isAdmin =
             await checkAdmin(user);
-
 
         if (!isAdmin) {
 
             showToast(
                 "ليس لديك صلاحية الدخول إلى لوحة الإدارة."
             );
-
 
             setTimeout(() => {
 
@@ -1333,10 +1598,8 @@ onAuthStateChanged(
 
             }, 1500);
 
-
             return;
         }
-
 
         await loadMembers();
 
@@ -1345,5 +1608,7 @@ onAuthStateChanged(
         await loadActivities();
 
         await loadGallery();
+
+        await loadInquiries();
     }
 );
