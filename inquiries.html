@@ -1,0 +1,289 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<meta name="description"
+      content="استفسارات أعضاء فريق شمال واسط الثقافي التطوعي">
+
+<title>استفسارات الأعضاء | فريق شمال واسط الثقافي التطوعي</title>
+
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet"
+      href="inquiries.css">
+
+</head><body class="inquiries-page"><!-- HEADER -->
+
+<header class="inquiry-header">
+
+    <div class="inquiry-header-inner">
+
+        <a href="member.html"
+           class="inquiry-logo">
+
+            <div class="inquiry-logo-image">
+
+                <img
+                    src="assets/team-logo.jpg"
+                    alt="شعار فريق شمال واسط">
+
+            </div>
+
+            <div class="inquiry-logo-text">
+
+                <strong>
+                    فريق شمال واسط
+                </strong>
+
+            </div>
+
+        </a>
+
+
+        <div class="inquiry-actions">
+
+            <a href="member.html"
+               class="back-member">
+
+                حسابي
+
+            </a>
+
+            <button
+                id="logoutBtn"
+                class="inquiry-logout"
+                type="button">
+
+                تسجيل الخروج
+
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- MAIN -->
+
+<main>
+
+
+    <!-- INTRO -->
+
+    <section class="inquiry-hero">
+
+        <div class="container">
+
+            <span class="inquiry-badge">
+                ✦ خدمة خاصة بالأعضاء
+            </span>
+
+            <h1>
+                استفسارات الأعضاء
+            </h1>
+
+            <p>
+                تواصل مع إدارة فريق شمال واسط الثقافي التطوعي
+                وأرسل استفسارك بسهولة.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- FORM -->
+
+    <section class="inquiry-section">
+
+        <div class="container">
+
+            <div class="inquiry-form-card">
+
+                <div class="form-heading">
+
+                    <div class="form-icon">
+                        💬
+                    </div>
+
+                    <div>
+
+                        <span>
+                            تواصل معنا
+                        </span>
+
+                        <h2>
+                            إرسال استفسار
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <form id="inquiryForm">
+
+
+                    <div class="form-group">
+
+                        <label for="inquiryType">
+                            نوع الاستفسار
+                        </label>
+
+                        <select
+                            id="inquiryType"
+                            required>
+
+                            <option value="">
+                                اختر نوع الاستفسار
+                            </option>
+
+                            <option value="العضوية">
+                                العضوية
+                            </option>
+
+                            <option value="الفعاليات">
+                                الفعاليات
+                            </option>
+
+                            <option value="التطوع">
+                                التطوع
+                            </option>
+
+                            <option value="اقتراح">
+                                اقتراح
+                            </option>
+
+                            <option value="شكوى">
+                                شكوى
+                            </option>
+
+                            <option value="أخرى">
+                                أخرى
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="inquirySubject">
+                            عنوان الاستفسار
+                        </label>
+
+                        <input
+                            type="text"
+                            id="inquirySubject"
+                            maxlength="150"
+                            placeholder="اكتب عنوان الاستفسار"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="inquiryMessage">
+                            تفاصيل الاستفسار
+                        </label>
+
+                        <textarea
+                            id="inquiryMessage"
+                            rows="7"
+                            maxlength="2000"
+                            placeholder="اكتب استفسارك بالتفصيل..."
+                            required></textarea>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        id="sendInquiryBtn"
+                        class="send-inquiry-btn">
+
+                        إرسال الاستفسار
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- PREVIOUS INQUIRIES -->
+
+    <section class="my-inquiries-section">
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span>
+                    ملفي
+                </span>
+
+                <h2>
+                    استفساراتي السابقة
+                </h2>
+
+                <p>
+                    يمكنك متابعة استفساراتك والردود عليها من هنا.
+                </p>
+
+            </div>
+
+
+            <div
+                id="inquiriesList"
+                class="inquiries-list">
+
+                <div class="loading-message">
+                    جاري تحميل الاستفسارات...
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<div
+    id="inquiryToast"
+    class="inquiry-toast"
+    role="alert">
+</div>
+
+
+<script
+    type="module"
+    src="inquiries.js">
+</script>
+
+</body>
+</html>
