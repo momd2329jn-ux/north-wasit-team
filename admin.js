@@ -15,16 +15,12 @@ import {
 } from "./firebase.js";
 
 
-/* العناصر */
+/* =========================
+   العناصر
+========================= */
 
-const adminMessage =
-    document.getElementById("adminMessage");
-
-const adminContent =
-    document.getElementById("adminContent");
-
-const adminLogoutBtn =
-    document.getElementById("adminLogoutBtn");
+const logoutBtn =
+    document.getElementById("logoutBtn");
 
 const newsForm =
     document.getElementById("newsForm");
@@ -32,19 +28,48 @@ const newsForm =
 const activityForm =
     document.getElementById("activityForm");
 
+const galleryForm =
+    document.getElementById("galleryForm");
+
 const membersList =
     document.getElementById("membersList");
+
+const newsList =
+    document.getElementById("newsList");
+
+const activitiesList =
+    document.getElementById("activitiesList");
+
+const galleryList =
+    document.getElementById("galleryList");
 
 const membersCount =
     document.getElementById("membersCount");
 
+const newsCount =
+    document.getElementById("newsCount");
+
+const activitiesCount =
+    document.getElementById("activitiesCount");
+
+const galleryCount =
+    document.getElementById("galleryCount");
+
 const adminToast =
     document.getElementById("adminToast");
 
+const galleryImage =
+    document.getElementById("galleryImage");
 
-/* رسالة صغيرة */
+const imagePreview =
+    document.getElementById("imagePreview");
 
-function showAdminToast(message) {
+
+/* =========================
+   التنبيهات
+========================= */
+
+function showToast(message) {
 
     if (!adminToast) return;
 
@@ -53,14 +78,14 @@ function showAdminToast(message) {
     adminToast.classList.add("show");
 
     setTimeout(() => {
-
         adminToast.classList.remove("show");
-
     }, 3500);
 }
 
 
-/* حماية النصوص */
+/* =========================
+   حماية النصوص
+========================= */
 
 function escapeHTML(value) {
 
@@ -73,7 +98,9 @@ function escapeHTML(value) {
 }
 
 
-/* تحويل الصورة إلى حجم صغير */
+/* =========================
+   ضغط الصور
+========================= */
 
 function compressImage(file) {
 
@@ -82,28 +109,26 @@ function compressImage(file) {
         const reader =
             new FileReader();
 
-        reader.onload = function () {
+        reader.onload = () => {
 
             const image =
                 new Image();
 
-            image.onload = function () {
+            image.onload = () => {
 
-                const maxWidth = 1200;
-                const maxHeight = 900;
+                const maxWidth = 1000;
+                const maxHeight = 750;
 
-                let width =
-                    image.width;
-
-                let height =
-                    image.height;
+                let width = image.width;
+                let height = image.height;
 
 
                 if (width > maxWidth) {
 
                     height =
                         height *
-                        (maxWidth / width);
+                        maxWidth /
+                        width;
 
                     width =
                         maxWidth;
@@ -114,7 +139,8 @@ function compressImage(file) {
 
                     width =
                         width *
-                        (maxHeight / height);
+                        maxHeight /
+                        height;
 
                     height =
                         maxHeight;
@@ -138,6 +164,18 @@ function compressImage(file) {
                     canvas.getContext("2d");
 
 
+                if (!context) {
+
+                    reject(
+                        new Error(
+                            "تعذر تجهيز الصورة."
+                        )
+                    );
+
+                    return;
+                }
+
+
                 context.drawImage(
                     image,
                     0,
@@ -147,76 +185,94 @@ function compressImage(file) {
                 );
 
 
-                const compressed =
-                    canvas.toDataURL(
-                        "image/jpeg",
-                        0.70
-                    );
+                const qualities = [
+                    0.65,
+                    0.55,
+                    0.45,
+                    0.35,
+                    0.28
+                ];
 
 
-                resolve(compressed);
+                let result = "";
+
+
+                for (
+                    const quality
+                    of qualities
+                ) {
+
+                    result =
+                        canvas.toDataURL(
+                            "image/jpeg",
+                            quality
+                        );
+
+
+                    if (
+                        result.length <=
+                        550000
+                    ) {
+                        break;
+                    }
+                }
+
+
+                resolve(result);
             };
 
 
-            image.onerror = reject;
+            image.onerror = () => {
+
+                reject(
+                    new Error(
+                        "تعذر قراءة الصورة."
+                    )
+                );
+            };
+
 
             image.src =
                 reader.result;
         };
 
 
-        reader.onerror = reject;
+        reader.onerror = () => {
+
+            reject(
+                new Error(
+                    "تعذر قراءة الملف."
+                )
+            );
+        };
+
 
         reader.readAsDataURL(file);
     });
 }
 
 
-/* التحقق من صلاحية الأدمن */
+/* =========================
+   التحقق من الأدمن
+========================= */
 
 async function checkAdmin(user) {
 
     try {
 
         const adminRef =
-            doc(db, "admins", user.uid);
+            doc(
+                db,
+                "admins",
+                user.uid
+            );
+
 
         const adminSnapshot =
             await getDoc(adminRef);
 
 
-        if (!adminSnapshot.exists()) {
-
-            if (adminMessage) {
-
-                adminMessage.textContent =
-                    "ليس لديك صلاحية الدخول إلى لوحة الإدارة.";
-
-                adminMessage.style.color =
-                    "#b91c1c";
-            }
-
-            return false;
-        }
-
-
-        if (adminMessage) {
-
-            adminMessage.textContent =
-                "تم التحقق من صلاحيات الإدارة بنجاح.";
-
-            adminMessage.style.color =
-                "#15803d";
-        }
-
-
-        if (adminContent) {
-
-            adminContent.classList.remove("hidden");
-        }
-
-
-        return true;
+        return adminSnapshot.exists();
 
     } catch (error) {
 
@@ -225,220 +281,28 @@ async function checkAdmin(user) {
             error
         );
 
-
-        if (adminMessage) {
-
-            adminMessage.textContent =
-                "حدث خطأ أثناء التحقق من صلاحيات الإدارة.";
-
-            adminMessage.style.color =
-                "#b91c1c";
-        }
-
-
         return false;
     }
 }
 
 
-/* نشر خبر */
-
-if (newsForm) {
-
-    newsForm.addEventListener(
-        "submit",
-        async (event) => {
-
-            event.preventDefault();
-
-
-            const title =
-                document
-                    .getElementById("newsTitle")
-                    .value
-                    .trim();
-
-
-            const content =
-                document
-                    .getElementById("newsContent")
-                    .value
-                    .trim();
-
-
-            if (!title || !content) {
-
-                showAdminToast(
-                    "يرجى ملء جميع حقول الخبر."
-                );
-
-                return;
-            }
-
-
-            try {
-
-                await addDoc(
-                    collection(db, "news"),
-                    {
-                        title: title,
-                        content: content,
-                        createdAt:
-                            serverTimestamp()
-                    }
-                );
-
-
-                newsForm.reset();
-
-
-                showAdminToast(
-                    "تم نشر الخبر بنجاح ✅"
-                );
-
-
-                await loadNews();
-
-            } catch (error) {
-
-                console.error(error);
-
-                showAdminToast(
-                    "حدث خطأ أثناء نشر الخبر."
-                );
-            }
-        }
-    );
-}
-
-
-/* نشر فعالية */
-
-if (activityForm) {
-
-    activityForm.addEventListener(
-        "submit",
-        async (event) => {
-
-            event.preventDefault();
-
-
-            const title =
-                document
-                    .getElementById("activityTitle")
-                    .value
-                    .trim();
-
-
-            const content =
-                document
-                    .getElementById("activityContent")
-                    .value
-                    .trim();
-
-
-            if (!title || !content) {
-
-                showAdminToast(
-                    "يرجى ملء جميع حقول الفعالية."
-                );
-
-                return;
-            }
-
-
-            try {
-
-                await addDoc(
-                    collection(db, "activities"),
-                    {
-                        title: title,
-                        content: content,
-                        createdAt:
-                            serverTimestamp()
-                    }
-                );
-
-
-                activityForm.reset();
-
-
-                showAdminToast(
-                    "تم نشر الفعالية بنجاح ✅"
-                );
-
-
-                await loadActivities();
-
-            } catch (error) {
-
-                console.error(error);
-
-                showAdminToast(
-                    "حدث خطأ أثناء نشر الفعالية."
-                );
-            }
-        }
-    );
-}
-
-
-/* حذف خبر */
-
-async function deleteNews(newsId) {
-
-    const confirmed =
-        confirm(
-            "هل أنت متأكد من حذف هذا الخبر؟"
-        );
-
-
-    if (!confirmed) return;
-
-
-    try {
-
-        await deleteDoc(
-            doc(db, "news", newsId)
-        );
-
-
-        showAdminToast(
-            "تم حذف الخبر بنجاح 🗑️"
-        );
-
-
-        await loadNews();
-
-    } catch (error) {
-
-        console.error(error);
-
-        showAdminToast(
-            "حدث خطأ أثناء حذف الخبر."
-        );
-    }
-}
-
-
-/* تحميل الأخبار */
+/* =========================
+   الأخبار
+========================= */
 
 async function loadNews() {
 
-    const container =
-        document.getElementById(
-            "adminNewsList"
-        );
-
-
-    if (!container) return;
+    if (!newsList) return;
 
 
     try {
 
         const newsQuery =
             query(
-                collection(db, "news"),
+                collection(
+                    db,
+                    "news"
+                ),
                 orderBy(
                     "createdAt",
                     "desc"
@@ -450,10 +314,17 @@ async function loadNews() {
             await getDocs(newsQuery);
 
 
+        if (newsCount) {
+
+            newsCount.textContent =
+                snapshot.size;
+        }
+
+
         if (snapshot.empty) {
 
-            container.innerHTML = `
-                <div class="members-loading">
+            newsList.innerHTML = `
+                <div class="empty-message">
                     لا توجد أخبار حاليًا.
                 </div>
             `;
@@ -462,7 +333,7 @@ async function loadNews() {
         }
 
 
-        container.innerHTML = "";
+        newsList.innerHTML = "";
 
 
         snapshot.forEach((docSnap) => {
@@ -472,7 +343,9 @@ async function loadNews() {
 
 
             const item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             item.className =
@@ -495,16 +368,32 @@ async function loadNews() {
                 </div>
 
                 <button
-                    class="delete-btn"
                     type="button"
-                    onclick="deleteNews('${docSnap.id}')"
+                    class="delete-btn"
+                    data-id="${docSnap.id}"
                 >
                     🗑️ حذف
                 </button>
             `;
 
 
-            container.appendChild(item);
+            const deleteButton =
+                item.querySelector(
+                    ".delete-btn"
+                );
+
+
+            deleteButton.addEventListener(
+                "click",
+                () => {
+                    deleteNews(
+                        docSnap.id
+                    );
+                }
+            );
+
+
+            newsList.appendChild(item);
         });
 
 
@@ -512,9 +401,8 @@ async function loadNews() {
 
         console.error(error);
 
-
-        container.innerHTML = `
-            <div class="members-loading">
+        newsList.innerHTML = `
+            <div class="empty-message">
                 تعذر تحميل الأخبار.
             </div>
         `;
@@ -522,19 +410,96 @@ async function loadNews() {
 }
 
 
-/* حذف فعالية */
+/* إضافة خبر */
 
-async function deleteActivity(
-    activityId
-) {
+if (newsForm) {
 
-    const confirmed =
-        confirm(
-            "هل أنت متأكد من حذف هذه الفعالية؟"
-        );
+    newsForm.addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
 
 
-    if (!confirmed) return;
+            const title =
+                document
+                    .getElementById(
+                        "newsTitle"
+                    )
+                    ?.value
+                    .trim();
+
+
+            const content =
+                document
+                    .getElementById(
+                        "newsContent"
+                    )
+                    ?.value
+                    .trim();
+
+
+            if (!title || !content) {
+
+                showToast(
+                    "يرجى ملء جميع حقول الخبر."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                await addDoc(
+                    collection(
+                        db,
+                        "news"
+                    ),
+                    {
+                        title,
+                        content,
+                        createdAt:
+                            serverTimestamp()
+                    }
+                );
+
+
+                newsForm.reset();
+
+
+                showToast(
+                    "تم نشر الخبر بنجاح ✅"
+                );
+
+
+                await loadNews();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                showToast(
+                    "حدث خطأ أثناء نشر الخبر."
+                );
+            }
+        }
+    );
+}
+
+
+/* حذف خبر */
+
+async function deleteNews(id) {
+
+    if (
+        !confirm(
+            "هل أنت متأكد من حذف هذا الخبر؟"
+        )
+    ) {
+        return;
+    }
 
 
     try {
@@ -542,48 +507,48 @@ async function deleteActivity(
         await deleteDoc(
             doc(
                 db,
-                "activities",
-                activityId
+                "news",
+                id
             )
         );
 
 
-        showAdminToast(
-            "تم حذف الفعالية بنجاح 🗑️"
+        showToast(
+            "تم حذف الخبر بنجاح 🗑️"
         );
 
 
-        await loadActivities();
+        await loadNews();
+
 
     } catch (error) {
 
         console.error(error);
 
-        showAdminToast(
-            "حدث خطأ أثناء حذف الفعالية."
+        showToast(
+            "حدث خطأ أثناء حذف الخبر."
         );
     }
 }
 
 
-/* تحميل الفعاليات */
+/* =========================
+   الفعاليات
+========================= */
 
 async function loadActivities() {
 
-    const container =
-        document.getElementById(
-            "adminActivitiesList"
-        );
-
-
-    if (!container) return;
+    if (!activitiesList) return;
 
 
     try {
 
         const activitiesQuery =
             query(
-                collection(db, "activities"),
+                collection(
+                    db,
+                    "activities"
+                ),
                 orderBy(
                     "createdAt",
                     "desc"
@@ -597,10 +562,17 @@ async function loadActivities() {
             );
 
 
+        if (activitiesCount) {
+
+            activitiesCount.textContent =
+                snapshot.size;
+        }
+
+
         if (snapshot.empty) {
 
-            container.innerHTML = `
-                <div class="members-loading">
+            activitiesList.innerHTML = `
+                <div class="empty-message">
                     لا توجد فعاليات حاليًا.
                 </div>
             `;
@@ -609,7 +581,7 @@ async function loadActivities() {
         }
 
 
-        container.innerHTML = "";
+        activitiesList.innerHTML = "";
 
 
         snapshot.forEach((docSnap) => {
@@ -619,7 +591,9 @@ async function loadActivities() {
 
 
             const item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             item.className =
@@ -642,16 +616,29 @@ async function loadActivities() {
                 </div>
 
                 <button
-                    class="delete-btn"
                     type="button"
-                    onclick="deleteActivity('${docSnap.id}')"
+                    class="delete-btn"
                 >
                     🗑️ حذف
                 </button>
             `;
 
 
-            container.appendChild(item);
+            item
+                .querySelector(
+                    ".delete-btn"
+                )
+                .addEventListener(
+                    "click",
+                    () => {
+                        deleteActivity(
+                            docSnap.id
+                        );
+                    }
+                );
+
+
+            activitiesList.appendChild(item);
         });
 
 
@@ -659,9 +646,8 @@ async function loadActivities() {
 
         console.error(error);
 
-
-        container.innerHTML = `
-            <div class="members-loading">
+        activitiesList.innerHTML = `
+            <div class="empty-message">
                 تعذر تحميل الفعاليات.
             </div>
         `;
@@ -669,162 +655,96 @@ async function loadActivities() {
 }
 
 
-/* ========================= */
-/* معرض الصور */
-/* ========================= */
+/* إضافة فعالية */
+
+if (activityForm) {
+
+    activityForm.addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
 
 
-/* إضافة صورة */
-
-async function uploadGalleryImage() {
-
-    const imageInput =
-        document.getElementById(
-            "galleryImage"
-        );
-
-    const titleInput =
-        document.getElementById(
-            "galleryTitle"
-        );
-
-    if (!imageInput) {
-
-        showAdminToast(
-            "لم يتم العثور على حقل اختيار الصورة."
-        );
-
-        return;
-    }
+            const title =
+                document
+                    .getElementById(
+                        "activityTitle"
+                    )
+                    ?.value
+                    .trim();
 
 
-    const file =
-        imageInput.files[0];
+            const content =
+                document
+                    .getElementById(
+                        "activityContent"
+                    )
+                    ?.value
+                    .trim();
 
 
-    const title =
-        titleInput
-            ? titleInput.value.trim()
-            : "";
+            if (!title || !content) {
 
+                showToast(
+                    "يرجى ملء جميع حقول الفعالية."
+                );
 
-    if (!file) {
-
-        showAdminToast(
-            "يرجى اختيار صورة أولًا."
-        );
-
-        return;
-    }
-
-
-    if (!file.type.startsWith("image/")) {
-
-        showAdminToast(
-            "الملف المختار ليس صورة."
-        );
-
-        return;
-    }
-
-
-    try {
-
-        showAdminToast(
-            "جاري تجهيز الصورة..."
-        );
-
-
-        const imageData =
-            await compressImage(file);
-
-
-        /*
-         * نتأكد من حجم الصورة بعد الضغط.
-         * Firestore لديه حد لحجم المستند،
-         * لذلك نمنع الصور الكبيرة جدًا.
-         */
-
-        const approximateSize =
-            Math.ceil(
-                (imageData.length * 3) / 4
-            );
-
-
-        if (
-            approximateSize >
-            700000
-        ) {
-
-            showAdminToast(
-                "الصورة ما زالت كبيرة جدًا، اختاري صورة أصغر."
-            );
-
-            return;
-        }
-
-
-        await addDoc(
-            collection(
-                db,
-                "gallery"
-            ),
-            {
-                title:
-                    title || "فعالية فريق شمال واسط",
-
-                image:
-                    imageData,
-
-                createdAt:
-                    serverTimestamp()
+                return;
             }
-        );
 
 
-        imageInput.value = "";
+            try {
+
+                await addDoc(
+                    collection(
+                        db,
+                        "activities"
+                    ),
+                    {
+                        title,
+                        content,
+                        createdAt:
+                            serverTimestamp()
+                    }
+                );
 
 
-        if (titleInput) {
-            titleInput.value = "";
+                activityForm.reset();
+
+
+                showToast(
+                    "تم نشر الفعالية بنجاح ✅"
+                );
+
+
+                await loadActivities();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                showToast(
+                    "حدث خطأ أثناء نشر الفعالية."
+                );
+            }
         }
-
-
-        showAdminToast(
-            "تمت إضافة الصورة للمعرض بنجاح 📸"
-        );
-
-
-        await loadGallery();
-
-    } catch (error) {
-
-        console.error(
-            "خطأ في رفع الصورة:",
-            error
-        );
-
-
-        showAdminToast(
-            "حدث خطأ أثناء إضافة الصورة."
-        );
-    }
+    );
 }
 
 
-/* حذف صورة */
+/* حذف فعالية */
 
-async function deleteGalleryImage(
-    imageId
-) {
+async function deleteActivity(id) {
 
-    const confirmed =
-        confirm(
-            "هل أنت متأكد من حذف هذه الصورة؟"
-        );
-
-
-    if (!confirmed) return;
+    if (
+        !confirm(
+            "هل أنت متأكد من حذف هذه الفعالية؟"
+        )
+    ) {
+        return;
+    }
 
 
     try {
@@ -832,45 +752,82 @@ async function deleteGalleryImage(
         await deleteDoc(
             doc(
                 db,
-                "gallery",
-                imageId
+                "activities",
+                id
             )
         );
 
 
-        showAdminToast(
-            "تم حذف الصورة بنجاح 🗑️"
+        showToast(
+            "تم حذف الفعالية بنجاح 🗑️"
         );
 
 
-        await loadGallery();
+        await loadActivities();
+
 
     } catch (error) {
 
-        console.error(
-            "خطأ في حذف الصورة:",
-            error
-        );
+        console.error(error);
 
-
-        showAdminToast(
-            "حدث خطأ أثناء حذف الصورة."
+        showToast(
+            "حدث خطأ أثناء حذف الفعالية."
         );
     }
 }
 
 
-/* تحميل صور المعرض */
+/* =========================
+   معرض الصور
+========================= */
+
+
+/* معاينة الصورة */
+
+if (galleryImage) {
+
+    galleryImage.addEventListener(
+        "change",
+        () => {
+
+            const file =
+                galleryImage.files[0];
+
+
+            if (!file) {
+
+                if (imagePreview) {
+                    imagePreview.innerHTML =
+                        "";
+                }
+
+                return;
+            }
+
+
+            const url =
+                URL.createObjectURL(file);
+
+
+            if (imagePreview) {
+
+                imagePreview.innerHTML = `
+                    <img
+                        src="${url}"
+                        alt="معاينة الصورة"
+                    >
+                `;
+            }
+        }
+    );
+}
+
+
+/* تحميل المعرض */
 
 async function loadGallery() {
 
-    const container =
-        document.getElementById(
-            "adminGalleryList"
-        );
-
-
-    if (!container) return;
+    if (!galleryList) return;
 
 
     try {
@@ -894,10 +851,17 @@ async function loadGallery() {
             );
 
 
+        if (galleryCount) {
+
+            galleryCount.textContent =
+                snapshot.size;
+        }
+
+
         if (snapshot.empty) {
 
-            container.innerHTML = `
-                <div class="members-loading">
+            galleryList.innerHTML = `
+                <div class="empty-message">
                     لا توجد صور في المعرض حاليًا.
                 </div>
             `;
@@ -906,7 +870,7 @@ async function loadGallery() {
         }
 
 
-        container.innerHTML = "";
+        galleryList.innerHTML = "";
 
 
         snapshot.forEach((docSnap) => {
@@ -916,7 +880,9 @@ async function loadGallery() {
 
 
             const item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             item.className =
@@ -924,29 +890,16 @@ async function loadGallery() {
 
 
             item.innerHTML = `
-                <div
-                    style="
-                        display:flex;
-                        align-items:center;
-                        gap:15px;
-                        width:100%;
-                    "
-                >
+                <div class="gallery-admin-item">
 
                     <img
                         src="${data.image}"
-                        alt="${escapeHTML(data.title)}"
-                        style="
-                            width:90px;
-                            height:70px;
-                            object-fit:cover;
-                            border-radius:12px;
-                            flex-shrink:0;
-                        "
+                        alt="${escapeHTML(
+                            data.title
+                        )}"
                     >
 
                     <div>
-
                         <h3>
                             ${escapeHTML(
                                 data.title
@@ -956,35 +909,43 @@ async function loadGallery() {
                         <p>
                             صورة من معرض الفريق
                         </p>
-
                     </div>
 
                 </div>
 
                 <button
-                    class="delete-btn"
                     type="button"
-                    onclick="deleteGalleryImage('${docSnap.id}')"
+                    class="delete-btn"
                 >
                     🗑️ حذف
                 </button>
             `;
 
 
-            container.appendChild(item);
+            item
+                .querySelector(
+                    ".delete-btn"
+                )
+                .addEventListener(
+                    "click",
+                    () => {
+                        deleteGalleryImage(
+                            docSnap.id
+                        );
+                    }
+                );
+
+
+            galleryList.appendChild(item);
         });
 
 
     } catch (error) {
 
-        console.error(
-            "خطأ في تحميل المعرض:",
-            error
-        );
+        console.error(error);
 
-
-        container.innerHTML = `
-            <div class="members-loading">
+        galleryList.innerHTML = `
+            <div class="empty-message">
                 تعذر تحميل صور المعرض.
             </div>
         `;
@@ -992,7 +953,193 @@ async function loadGallery() {
 }
 
 
-/* تحميل الأعضاء */
+/* رفع صورة */
+
+if (galleryForm) {
+
+    galleryForm.addEventListener(
+        "submit",
+        async (event) => {
+
+            event.preventDefault();
+
+
+            const title =
+                document
+                    .getElementById(
+                        "galleryTitle"
+                    )
+                    ?.value
+                    .trim();
+
+
+            const file =
+                galleryImage
+                    ?.files[0];
+
+
+            if (!file) {
+
+                showToast(
+                    "يرجى اختيار صورة أولًا."
+                );
+
+                return;
+            }
+
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                showToast(
+                    "الملف المختار ليس صورة."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                showToast(
+                    "جاري تجهيز الصورة..."
+                );
+
+
+                const imageData =
+                    await compressImage(
+                        file
+                    );
+
+
+                if (
+                    imageData.length >
+                    550000
+                ) {
+
+                    showToast(
+                        "الصورة كبيرة جدًا، اختاري صورة أصغر."
+                    );
+
+                    return;
+                }
+
+
+                await addDoc(
+                    collection(
+                        db,
+                        "gallery"
+                    ),
+                    {
+                        title:
+                            title ||
+                            "فعالية فريق شمال واسط",
+
+                        image:
+                            imageData,
+
+                        createdAt:
+                            serverTimestamp()
+                    }
+                );
+
+
+                galleryForm.reset();
+
+
+                if (imagePreview) {
+                    imagePreview.innerHTML =
+                        "";
+                }
+
+
+                showToast(
+                    "تمت إضافة الصورة بنجاح 📸"
+                );
+
+
+                await loadGallery();
+
+
+            } catch (error) {
+
+                console.error(
+                    "خطأ في رفع الصورة:",
+                    error
+                );
+
+
+                if (
+                    error?.code 
+                    ===
+                    "permission-denied"
+                ) {
+
+                    showToast(
+                        "ما عندچ صلاحية إضافة الصور."
+                    );
+
+                } else {
+
+                    showToast(
+                        "تعذر إضافة الصورة."
+                    );
+                }
+            }
+        }
+    );
+}
+
+
+/* حذف صورة */
+
+async function deleteGalleryImage(id) {
+
+    if (
+        !confirm(
+            "هل أنت متأكد من حذف هذه الصورة؟"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        await deleteDoc(
+            doc(
+                db,
+                "gallery",
+                id
+            )
+        );
+
+
+        showToast(
+            "تم حذف الصورة بنجاح 🗑️"
+        );
+
+
+        await loadGallery();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "حدث خطأ أثناء حذف الصورة."
+        );
+    }
+}
+
+
+/* =========================
+   الأعضاء
+========================= */
 
 async function loadMembers() {
 
@@ -1003,7 +1150,10 @@ async function loadMembers() {
 
         const membersQuery =
             query(
-                collection(db, "members"),
+                collection(
+                    db,
+                    "members"
+                ),
                 orderBy(
                     "createdAt",
                     "desc"
@@ -1020,14 +1170,14 @@ async function loadMembers() {
         if (membersCount) {
 
             membersCount.textContent =
-                `${snapshot.size} عضو`;
+                snapshot.size;
         }
 
 
         if (snapshot.empty) {
 
             membersList.innerHTML = `
-                <div class="members-loading">
+                <div class="empty-message">
                     لا يوجد أعضاء حاليًا.
                 </div>
             `;
@@ -1060,13 +1210,10 @@ async function loadMembers() {
                 "لا يوجد رقم";
 
 
-            const firstLetter =
-                name.charAt(0) ||
-                "ع";
-
-
             const row =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             row.className =
@@ -1076,7 +1223,7 @@ async function loadMembers() {
             row.innerHTML = `
                 <div class="member-row-avatar">
                     ${escapeHTML(
-                        firstLetter
+                        name.charAt(0)
                     )}
                 </div>
 
@@ -1112,53 +1259,22 @@ async function loadMembers() {
 
         console.error(error);
 
-
         membersList.innerHTML = `
-            <div class="members-loading">
+            <div class="empty-message">
                 تعذر تحميل قائمة الأعضاء.
             </div>
         `;
     }
 }
-/* جعل دوال الحذف متاحة للأزرار */
-
-window.deleteNews =
-    deleteNews;
-
-window.deleteActivity =
-    deleteActivity;
-
-window.deleteGalleryImage =
-    deleteGalleryImage;
 
 
-/* زر إضافة صورة */
+/* =========================
+   تسجيل الخروج
+========================= */
 
-const galleryForm =
-    document.getElementById(
-        "galleryForm"
-    );
+if (logoutBtn) {
 
-
-if (galleryForm) {
-
-    galleryForm.addEventListener(
-        "submit",
-        async (event) => {
-
-            event.preventDefault();
-
-            await uploadGalleryImage();
-        }
-    );
-}
-
-
-/* تسجيل الخروج */
-
-if (adminLogoutBtn) {
-
-    adminLogoutBtn.addEventListener(
+    logoutBtn.addEventListener(
         "click",
         async () => {
 
@@ -1173,7 +1289,7 @@ if (adminLogoutBtn) {
 
                 console.error(error);
 
-                showAdminToast(
+                showToast(
                     "حدث خطأ أثناء تسجيل الخروج."
                 );
             }
@@ -1182,7 +1298,9 @@ if (adminLogoutBtn) {
 }
 
 
-/* التحقق من تسجيل الدخول */
+/* =========================
+   حماية لوحة الإدارة
+========================= */
 
 onAuthStateChanged(
     auth,
@@ -1202,6 +1320,20 @@ onAuthStateChanged(
 
 
         if (!isAdmin) {
+
+            showToast(
+                "ليس لديك صلاحية الدخول إلى لوحة الإدارة."
+            );
+
+
+            setTimeout(() => {
+
+                window.location.href =
+                    "index.html";
+
+            }, 1500);
+
+
             return;
         }
 
@@ -1215,18 +1347,3 @@ onAuthStateChanged(
         await loadGallery();
     }
 );
-
-
-/* السنة الحالية */
-
-const currentYear =
-    document.getElementById(
-        "currentYear"
-    );
-
-
-if (currentYear) {
-
-    currentYear.textContent =
-        new Date().getFullYear();
-}

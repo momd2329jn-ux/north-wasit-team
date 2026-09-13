@@ -4,75 +4,71 @@ import {
     onAuthStateChanged,
     signOut,
     doc,
-    getDoc
+    getDoc,
+    collection,
+    getDocs,
+    query,
+    orderBy,
+    limit
 } from "./firebase.js";
 
 
-/* =========================
-   العناصر
-========================= */
+const memberName = document.getElementById("memberName");
+const memberEmail = document.getElementById("memberEmail");
+const memberPhone = document.getElementById("memberPhone");
+const memberEducation = document.getElementById("memberEducation");
+const memberSpecialization = document.getElementById("memberSpecialization");
+const memberJob = document.getElementById("memberJob");
+const memberGender = document.getElementById("memberGender");
+const memberBirthDate = document.getElementById("memberBirthDate");
 
-const memberLoading =
-    document.getElementById("memberLoading");
+const logoutBtn = document.getElementById("logoutBtn");
 
-const memberData =
-    document.getElementById("memberData");
-
-const logoutBtn =
-    document.getElementById("logoutBtn");
+const memberNews = document.getElementById("memberNews");
+const memberActivities = document.getElementById("memberActivities");
 
 
-/* =========================
-   تحويل الجنس إلى عربي
-========================= */
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
 
-function getGenderText(gender) {
 
-    if (gender === "male") {
-        return "ذكر";
+function setText(element, value) {
+    if (element) {
+        element.textContent = value || "—";
     }
-
-    if (gender === "female") {
-        return "أنثى";
-    }
-
-    return "—";
 }
 
 
-/* =========================
-   تحويل التعليم إلى عربي
-========================= */
+/* تسجيل الخروج */
 
-function getEducationText(education) {
+if (logoutBtn) {
 
-    const educationMap = {
+    logoutBtn.addEventListener("click", async () => {
 
-        "high-school": "الثانوية",
-        "diploma": "دبلوم",
-        "bachelor": "بكالوريوس",
-        "master": "ماجستير",
-        "phd": "دكتوراه"
+        try {
 
-    };
+            await signOut(auth);
 
-    return educationMap[education] || education || "—";
+            window.location.href = "index.html";
+
+        } catch (error) {
+
+            console.error(
+                "خطأ أثناء تسجيل الخروج:",
+                error
+            );
+        }
+    });
 }
 
 
-/* =========================
-   حماية النصوص
-========================= */
-
-function safeText(value) {
-
-    return value || "—";
-}
-
-
-/* =========================
-   عرض بيانات العضو
-========================= */
+/* تحميل بيانات العضو */
 
 async function loadMemberData(user) {
 
@@ -87,14 +83,15 @@ async function loadMemberData(user) {
 
         if (!memberSnapshot.exists()) {
 
-            alert(
-                "لم يتم العثور على بيانات العضو."
+            setText(
+                memberName,
+                user.displayName || "عضو الفريق"
             );
 
-            await signOut(auth);
-
-            window.location.href =
-                "index.html";
+            setText(
+                memberEmail,
+                user.email
+            );
 
             return;
         }
@@ -104,117 +101,226 @@ async function loadMemberData(user) {
             memberSnapshot.data();
 
 
-        /* =========================
-           تعبئة البيانات
-        ========================== */
+        setText(
+            memberName,
+            data.fullName || user.displayName
+        );
 
-        const fullName =
-            safeText(data.fullName);
+        setText(
+            memberEmail,
+            data.email || user.email
+        );
 
+        setText(
+            memberPhone,
+            data.phone
+        );
 
-        document.getElementById(
-            "welcomeName"
-        ).textContent = fullName;
+        setText(
+            memberEducation,
+            data.education
+        );
 
+        setText(
+            memberSpecialization,
+            data.specialization
+        );
 
-        document.getElementById(
-            "memberFullName"
-        ).textContent = fullName;
+        setText(
+            memberJob,
+            data.job
+        );
 
+        setText(
+            memberGender,
+            data.gender
+        );
 
-        document.getElementById(
-            "memberPhone"
-        ).textContent =
-            safeText(data.phone);
-
-
-        document.getElementById(
-            "memberBirthDate"
-        ).textContent =
-            safeText(data.birthDate);
-
-
-        document.getElementById(
-            "memberGender"
-        ).textContent =
-            getGenderText(data.gender);
-
-
-        document.getElementById(
-            "memberEducation"
-        ).textContent =
-            getEducationText(data.education);
-
-
-        document.getElementById(
-            "memberSpecialization"
-        ).textContent =
-            safeText(data.specialization);
-
-
-        document.getElementById(
-            "memberJob"
-        ).textContent =
-            safeText(data.job);
-
-
-        document.getElementById(
-            "memberEmail"
-        ).textContent =
-            safeText(data.email || user.email);
-
-
-        /* =========================
-           الحرف الأول للأفاتار
-        ========================== */
-
-        const avatarLetter =
-            document.getElementById(
-                "avatarLetter"
-            );
-
-
-        if (avatarLetter) {
-
-            avatarLetter.textContent =
-                fullName.charAt(0) || "ع";
-
-        }
-
-
-        /* =========================
-           إظهار الصفحة
-        ========================== */
-
-        memberLoading.classList.add("hidden");
-
-        memberData.classList.remove("hidden");
+        setText(
+            memberBirthDate,
+            data.birthDate
+        );
 
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "خطأ في تحميل بيانات العضو:",
+            error
+        );
+    }
+}
 
 
-        memberLoading.innerHTML = `
-            <p>
-                حدث خطأ أثناء تحميل بياناتك.
-            </p>
+/* تحميل أخبار العضو */
+
+async function loadMemberNews() {
+
+    if (!memberNews) return;
+
+
+    try {
+
+        const newsQuery = query(
+            collection(db, "news"),
+            orderBy("createdAt", "desc"),
+            limit(5)
+        );
+
+
+        const snapshot =
+            await getDocs(newsQuery);
+
+
+        if (snapshot.empty) {
+
+            memberNews.innerHTML = `
+                <div class="empty-message">
+                    لا توجد أخبار حاليًا.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        memberNews.innerHTML = "";
+
+
+        snapshot.forEach((docSnap) => {
+
+            const data =
+                docSnap.data();
+
+
+            const article =
+                document.createElement("article");
+
+
+            article.className =
+                "member-news-card";
+
+
+            article.innerHTML = `
+                <h3>
+                    ${escapeHTML(data.title)}
+                </h3>
+
+                <p>
+                    ${escapeHTML(data.content)}
+                </p>
+            `;
+
+
+            memberNews.appendChild(article);
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "خطأ في تحميل الأخبار:",
+            error
+        );
+
+
+        memberNews.innerHTML = `
+            <div class="empty-message">
+                تعذر تحميل الأخبار.
+            </div>
         `;
     }
 }
 
 
-/* =========================
-   مراقبة تسجيل الدخول
-========================= */
+/* تحميل فعاليات العضو */
+
+async function loadMemberActivities() {
+
+    if (!memberActivities) return;
+
+
+    try {
+
+        const activitiesQuery = query(
+            collection(db, "activities"),
+            orderBy("createdAt", "desc"),
+            limit(5)
+        );
+
+
+        const snapshot =
+            await getDocs(activitiesQuery);
+
+
+        if (snapshot.empty) {
+
+            memberActivities.innerHTML = `
+                <div class="empty-message">
+                    لا توجد فعاليات حاليًا.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        memberActivities.innerHTML = "";
+
+
+        snapshot.forEach((docSnap) => {
+
+            const data =
+                docSnap.data();
+
+
+            const article =
+                document.createElement("article");
+
+
+            article.className =
+                "member-activity-card";
+
+
+            article.innerHTML = `
+                <h3>
+                    ${escapeHTML(data.title)}
+                </h3>
+
+                <p>
+                    ${escapeHTML(data.content)}
+                </p>
+            `;
+
+
+            memberActivities.appendChild(article);
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "خطأ في تحميل الفعاليات:",
+            error
+        );
+
+
+        memberActivities.innerHTML = `
+            <div class="empty-message">
+                تعذر تحميل الفعاليات.
+            </div>
+        `;
+    }
+}
+
+
+/* التحقق من تسجيل الدخول */
 
 onAuthStateChanged(auth, async (user) => {
 
     if (!user) {
 
-        window.location.href =
-            "index.html";
+        window.location.href = "index.html";
 
         return;
     }
@@ -222,52 +328,7 @@ onAuthStateChanged(auth, async (user) => {
 
     await loadMemberData(user);
 
+    await loadMemberNews();
+
+    await loadMemberActivities();
 });
-
-
-/* =========================
-   تسجيل الخروج
-========================= */
-
-if (logoutBtn) {
-
-    logoutBtn.addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                await signOut(auth);
-
-                window.location.href =
-                    "index.html";
-
-            } catch (error) {
-
-                console.error(error);
-
-                alert(
-                    "حدث خطأ أثناء تسجيل الخروج."
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================
-   السنة الحالية
-========================= */
-
-const currentYear =
-    document.getElementById("currentYear");
-
-if (currentYear) {
-
-    currentYear.textContent =
-        new Date().getFullYear();
-
-}

@@ -1,346 +1,617 @@
 /* =========================
-   ADMIN PAGE
+   لوحة تحكم فريق شمال واسط
+   تصميم عمودي مرتب
 ========================= */
 
-.admin-page {
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --navy: #031a43;
+    --blue: #155dcc;
+    --purple: #8d5cff;
+    --light: #eef7ff;
+    --white: #ffffff;
+    --text: #17233c;
+    --muted: #718096;
+    --border: #e3eaf3;
+    --danger: #e5484d;
+    --success: #16a36a;
+    --shadow: 0 10px 30px rgba(3, 26, 67, 0.08);
+}
+
+body {
+    direction: rtl;
+    font-family: Tahoma, Arial, sans-serif;
+    background: #f5f8fc;
+    color: var(--text);
     min-height: 100vh;
-    background: #f8fafc;
+    overflow-x: hidden;
+}
+
+/* =========================
+   الهيدر
+========================= */
+
+.admin-header {
+    width: 100%;
+    min-height: 82px;
+    background: var(--navy);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 15px 5%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+}
+
+.admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.admin-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: white;
+    flex-shrink: 0;
+}
+
+.admin-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-brand h1 {
+    font-size: 21px;
+    margin-bottom: 4px;
+}
+
+.admin-brand p {
+    font-size: 12px;
+    color: #cbd8ee;
 }
 
 .admin-header-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
-.admin-main {
-    min-height: calc(100vh - 160px);
-    padding: 65px 0;
-}
-
-
-/* =========================
-   INTRO
-========================= */
-
-.admin-intro {
-    padding: 35px;
-    margin-bottom: 25px;
-    border-radius: 24px;
-    background: #111827;
-    color: white;
-}
-
-.admin-badge {
-    display: inline-block;
-    padding: 6px 13px;
-    border-radius: 50px;
-    background: rgba(108, 77, 246, 0.25);
-    color: #c4b5fd;
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.admin-intro h1 {
-    margin-top: 10px;
-    font-size: 38px;
-}
-
-.admin-intro p {
-    max-width: 650px;
-    margin-top: 7px;
-    color: #9ca3af;
-    font-size: 14px;
-}
-
-
-/* =========================
-   ADMIN MESSAGE
-========================= */
-
-.admin-message {
-    padding: 15px 18px;
-    margin-bottom: 25px;
-    border-radius: 13px;
-    background: white;
-    border: 1px solid #e5e7eb;
-    color: #6b7280;
-    font-size: 13px;
-}
-
-
-/* =========================
-   ADMIN GRID
-========================= */
-
-.admin-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 22px;
-}
-
-
-/* =========================
-   ADMIN CARD
-========================= */
-
-.admin-card {
-    padding: 30px;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 22px;
-}
-
-.admin-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    padding-bottom: 22px;
-    margin-bottom: 22px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.admin-card-header span,
-.admin-section-header span {
-    color: #6c4df6;
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.admin-card-header h2,
-.admin-section-header h2 {
-    color: #111827;
-    font-size: 21px;
-    margin-top: 3px;
-}
-
-.admin-card-icon {
-    width: 50px;
-    height: 50px;
-    display: grid;
-    place-items: center;
-    border-radius: 14px;
-    background: rgba(108, 77, 246, 0.1);
-    font-size: 22px;
-}
-
-
-/* =========================
-   TEXTAREA
-========================= */
-
-.admin-card textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #e5e7eb;
+.back-home,
+.logout-btn {
+    border: none;
+    text-decoration: none;
+    padding: 11px 17px;
     border-radius: 10px;
-    outline: none;
-    resize: vertical;
-    font-family: inherit;
     font-size: 13px;
-    color: #111827;
-    transition: 0.2s;
+    cursor: pointer;
+    transition: 0.25s;
 }
 
-.admin-card textarea:focus {
-    border-color: #6c4df6;
-    box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.1);
-}
-
-
-/* =========================
-   SUBMIT BUTTON
-========================= */
-
-.admin-submit {
-    width: 100%;
-    min-height: 47px;
-    border: 0;
-    border-radius: 11px;
-    background: #6c4df6;
+.back-home {
+    background: rgba(255, 255, 255, 0.1);
     color: white;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 800;
-    transition: 0.2s;
 }
 
-.admin-submit:hover {
-    background: #5136d9;
+.back-home:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.logout-btn {
+    background: #ffffff;
+    color: var(--navy);
+    font-weight: bold;
+}
+
+.logout-btn:hover {
     transform: translateY(-2px);
 }
 
-
 /* =========================
-   MEMBERS SECTION
+   الحاوية الرئيسية
 ========================= */
 
-.admin-members-section {
-    margin-top: 25px;
-    padding: 30px;
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 22px;
+.admin-container {
+    width: min(1100px, 92%);
+    margin: 35px auto 70px;
 }
-
-.admin-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding-bottom: 22px;
-    margin-bottom: 22px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.members-count {
-    padding: 8px 14px;
-    border-radius: 50px;
-    background: rgba(108, 77, 246, 0.1);
-    color: #6c4df6;
-    font-size: 12px;
-    font-weight: 800;
-}
-
 
 /* =========================
-   MEMBERS LIST
+   الترحيب
+========================= */
+
+.admin-welcome {
+    width: 100%;
+    background: linear-gradient(135deg, var(--navy), #0d3d82);
+    border-radius: 20px;
+    padding: 35px;
+    color: white;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+}
+
+.welcome-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.13);
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-bottom: 13px;
+}
+
+.admin-welcome h2 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.admin-welcome p {
+    color: #d9e6fb;
+    font-size: 14px;
+}
+
+/* =========================
+   الإحصائيات
+========================= */
+
+.admin-stats {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    background: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.stat-card strong {
+    display: block;
+    font-size: 24px;
+    color: var(--navy);
+}
+
+.stat-card small {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* =========================
+   الأقسام
+========================= */
+
+.admin-section {
+    width: 100%;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+}
+
+.section-heading {
+    width: 100%;
+    margin-bottom: 25px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-label {
+    display: inline-block;
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.section-heading h2 {
+    color: var(--navy);
+    font-size: 21px;
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+/* =========================
+   الفورم
+========================= */
+
+.admin-form {
+    width: 100%;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: #f9fbfe;
+    color: var(--text);
+    border-radius: 11px;
+    padding: 13px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: 0.25s;
+}
+
+.form-group input {
+    height: 47px;
+}
+
+.form-group textarea {
+    min-height: 125px;
+    resize: vertical;
+    line-height: 1.8;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--blue);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(21, 93, 204, 0.08);
+}
+
+/* =========================
+   الأزرار
+========================= */
+
+.admin-btn {
+    border: none;
+    border-radius: 11px;
+    padding: 13px 22px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.admin-btn.primary {
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: white;
+}
+
+.admin-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(21, 93, 204, 0.22);
+}
+/* =========================
+   القوائم
+========================= */
+
+.admin-list {
+    width: 100%;
+    margin-top: 25px;
+}
+
+.admin-list > * {
+    width: 100%;
+}
+
+.member-news-card,
+.member-activity-card,
+.admin-item {
+    background: #f8fafd;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 18px;
+    margin-bottom: 12px;
+}
+
+.admin-item h3 {
+    color: var(--navy);
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.admin-item p {
+    color: #5d6b80;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.admin-item button,
+.delete-btn {
+    margin-top: 13px;
+    border: none;
+    background: #fff0f1;
+    color: var(--danger);
+    padding: 8px 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.admin-item button:hover,
+.delete-btn:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* =========================
+   رفع الصور
+========================= */
+
+input[type="file"] {
+    cursor: pointer;
+    padding: 10px !important;
+}
+
+.image-preview {
+    width: 100%;
+    min-height: 20px;
+    margin: 10px 0 18px;
+}
+
+.image-preview img {
+    display: block;
+    width: 180px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+/* =========================
+   معرض الإدارة
+========================= */
+
+.gallery-admin-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.gallery-admin-item {
+    background: #f8fafd;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.gallery-admin-item img {
+    width: 100%;
+    height: 180px;
+    display: block;
+    object-fit: cover;
+}
+
+.gallery-admin-item-content {
+    padding: 13px;
+}
+
+.gallery-admin-item h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+/* =========================
+   الأعضاء
 ========================= */
 
 .members-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    width: 100%;
 }
 
-.members-loading {
-    padding: 35px;
+.member-admin-card {
+    width: 100%;
+    background: #f8fafd;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 12px;
+}
+
+.member-admin-card h3 {
+    color: var(--navy);
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.member-admin-card p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* =========================
+   الحالات الفارغة
+========================= */
+
+.empty-message {
+    width: 100%;
     text-align: center;
-    color: #6b7280;
+    padding: 25px;
+    color: var(--muted);
+    background: #f8fafd;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
     font-size: 13px;
 }
 
-
 /* =========================
-   MEMBER ROW
+   التنبيه
 ========================= */
 
-.member-row {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 15px;
-    padding: 18px;
-    border: 1px solid #eef0f3;
-    border-radius: 15px;
-    background: #f8fafc;
-}
-
-.member-row-avatar {
-    width: 48px;
-    height: 48px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: #6c4df6;
+.admin-toast {
+    position: fixed;
+    left: 25px;
+    bottom: 25px;
+    background: var(--navy);
     color: white;
-    font-size: 18px;
-    font-weight: 800;
+    padding: 13px 18px;
+    border-radius: 11px;
+    font-size: 13px;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: 0.3s;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-.member-row-info h3 {
-    color: #111827;
-    font-size: 15px;
+.admin-toast.show {
+    opacity: 1;
+    transform: translateY(0);
 }
-
-.member-row-info p {
-    color: #6b7280;
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.member-row-phone {
-    color: #374151;
-    font-size: 12px;
-    direction: ltr;
-    text-align: left;
-}
-
 
 /* =========================
-   HIDDEN
+   الجوال
 ========================= */
 
-.hidden {
-    display: none !important;
-}
+@media (max-width: 850px) {
 
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 800px) {
-
-    .admin-main {
-        padding: 40px 0;
+    .admin-header {
+        padding: 13px 4%;
     }
 
-    .admin-grid {
-        grid-template-columns: 1fr;
+    .admin-header-actions {
+        gap: 6px;
     }
 
-    .admin-intro h1 {
-        font-size: 30px;
+    .back-home,
+    .logout-btn {
+        padding: 9px 11px;
+        font-size: 11px;
     }
 
-    .admin-card,
-    .admin-members-section {
-        padding: 22px 18px;
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gallery-admin-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
-
 
 @media (max-width: 600px) {
 
+    .admin-container {
+        width: 94%;
+        margin-top: 20px;
+    }
+
+    .admin-header {
+        position: relative;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-brand {
+        justify-content: center;
+    }
+
     .admin-header-actions {
-        gap: 5px;
+        justify-content: center;
     }
 
-    .admin-header-actions .back-home {
-        font-size: 12px;
-        padding: 8px 9px;
-    }
-
-    .admin-header-actions .logout-btn {
-        font-size: 11px;
-        padding: 8px 10px;
-    }
-
-    .admin-intro {
+    .admin-welcome {
         padding: 25px 20px;
+        text-align: center;
     }
 
-    .admin-intro h1 {
-        font-size: 27px;
+    .admin-welcome h2 {
+        font-size: 22px;
     }
 
-    .admin-intro p {
-        font-size: 13px;
+    .admin-section {
+        padding: 20px 16px;
+        border-radius: 16px;
+        margin-bottom: 18px;
     }
 
-    .admin-section-header {
-        align-items: flex-start;
+    .admin-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .stat-card strong {
+        font-size: 20px;
+    }
+
+    .gallery-admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-admin-item img {
+        height: 210px;
+    }
+}
+
+@media (max-width: 430px) {
+
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-header-actions {
         flex-direction: column;
     }
 
-    .member-row {
-        grid-template-columns: auto 1fr;
-    }
-
-    .member-row-phone {
-        grid-column: 2;
-        text-align: right;
+    .back-home,
+    .logout-btn {
+        width: 100%;
+        text-align: center;
     }
 }
