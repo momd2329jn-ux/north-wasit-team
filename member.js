@@ -12,40 +12,140 @@ import {
     limit
 } from "./firebase.js";
 
+const loadingState = document.getElementById("loadingState");
+const memberPage = document.getElementById("memberPage");
 
-const memberName = document.getElementById("memberName");
-const memberEmail = document.getElementById("memberEmail");
+const welcomeName = document.getElementById("welcomeName");
+const avatarLetter = document.getElementById("avatarLetter");
+
+const memberFullName = document.getElementById("memberFullName");
 const memberPhone = document.getElementById("memberPhone");
+const memberBirthDate = document.getElementById("memberBirthDate");
+const memberGender = document.getElementById("memberGender");
 const memberEducation = document.getElementById("memberEducation");
 const memberSpecialization = document.getElementById("memberSpecialization");
 const memberJob = document.getElementById("memberJob");
-const memberGender = document.getElementById("memberGender");
-const memberBirthDate = document.getElementById("memberBirthDate");
+const memberEmail = document.getElementById("memberEmail");
 
 const logoutBtn = document.getElementById("logoutBtn");
 
-const memberNews = document.getElementById("memberNews");
-const memberActivities = document.getElementById("memberActivities");
 
+// ===============================
+// أدوات مساعدة
+// ===============================
 
-function escapeHTML(value) {
-    return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+function setText(element, value, fallback = "غير مذكور") {
+    if (!element) return;
+
+    const text =
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== ""
+            ? String(value)
+            : fallback;
+
+    element.textContent = text;
 }
 
 
-function setText(element, value) {
-    if (element) {
-        element.textContent = value || "—";
+function getFirstLetter(name) {
+    if (!name) return "ع";
+
+    return String(name).trim().charAt(0) || "ع";
+}
+
+
+// ===============================
+// تحميل بيانات العضو
+// ===============================
+
+async function loadMemberData(user) {
+
+    try {
+
+        const memberRef = doc(db, "members", user.uid);
+        const memberSnap = await getDoc(memberRef);
+
+        if (!memberSnap.exists()) {
+            throw new Error("لم يتم العثور على بيانات العضو.");
+        }
+
+        const data = memberSnap.data();
+
+        const fullName =
+            data.fullName ||
+            data.name ||
+            user.displayName ||
+            "عضو الفريق";
+
+        // الاسم في الترحيب
+        setText(welcomeName, fullName, "عضو الفريق");
+
+        // الحرف داخل الصورة الشخصية
+        setText(avatarLetter, getFirstLetter(fullName), "ع");
+
+        // البيانات الشخصية
+        setText(memberFullName, fullName);
+        setText(memberPhone, data.phone);
+        setText(memberBirthDate, data.birthDate);
+        setText(memberGender, data.gender);
+        setText(memberEducation, data.education);
+        setText(memberSpecialization, data.specialization);
+        setText(memberJob, data.job);
+
+        // الإيميل نأخذه من Firebase Authentication
+        setText(memberEmail, user.email);
+
+        // إظهار الصفحة
+        if (loadingState) {
+            loadingState.style.display = "none";
+        }
+
+        if (memberPage) {
+            memberPage.style.display = "block";
+        }
+
+    } catch (error) {
+
+        console.error("خطأ في تحميل بيانات العضو:", error);
+
+        if (loadingState) {
+            loadingState.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:40px 20px;
+                    color:#b42318;
+                ">
+                    <h2>تعذر تحميل البيانات</h2>
+                    <p>
+                        حدث خطأ أثناء تحميل بيانات العضو.
+                    </p>
+                    <button
+                        onclick="location.reload()"
+                        style="
+                            margin-top:15px;
+                            padding:10px 20px;
+                            border:0;
+                            border-radius:10px;
+                            cursor:pointer;
+                        "
+                    >
+                        إعادة المحاولة
+                    </button>
+                </div>
+            `;
+        }
+
+        if (memberPage) {
+            memberPage.style.display = "none";
+        }
     }
 }
 
 
-/* تسجيل الخروج */
+// ===============================
+// تسجيل الخروج
+// ===============================
 
 if (logoutBtn) {
 
@@ -59,105 +159,23 @@ if (logoutBtn) {
 
         } catch (error) {
 
-            console.error(
-                "خطأ أثناء تسجيل الخروج:",
-                error
-            );
+            console.error("خطأ في تسجيل الخروج:", error);
+
+            alert("حدث خطأ أثناء تسجيل الخروج.");
         }
     });
 }
 
 
-/* تحميل بيانات العضو */
-
-async function loadMemberData(user) {
-
-    try {
-
-        const memberRef =
-            doc(db, "members", user.uid);
-
-        const memberSnapshot =
-            await getDoc(memberRef);
-
-
-        if (!memberSnapshot.exists()) {
-
-            setText(
-                memberName,
-                user.displayName || "عضو الفريق"
-            );
-
-            setText(
-                memberEmail,
-                user.email
-            );
-
-            return;
-        }
-
-
-        const data =
-            memberSnapshot.data();
-
-
-        setText(
-            memberName,
-            data.fullName || user.displayName
-        );
-
-        setText(
-            memberEmail,
-            data.email || user.email
-        );
-
-        setText(
-            memberPhone,
-            data.phone
-        );
-
-        setText(
-            memberEducation,
-            data.education
-        );
-
-        setText(
-            memberSpecialization,
-            data.specialization
-        );
-
-        setText(
-            memberJob,
-            data.job
-        );
-
-        setText(
-            memberGender,
-            data.gender
-        );
-
-        setText(
-            memberBirthDate,
-            data.birthDate
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "خطأ في تحميل بيانات العضو:",
-            error
-        );
-    }
-}
-
-
-/* تحميل أخبار العضو */
+// ===============================
+// آخر الأخبار
+// ===============================
 
 async function loadMemberNews() {
 
-    if (!memberNews) return;
+    const newsContainer = document.getElementById("memberNews");
 
+    if (!newsContainer) return;
 
     try {
 
@@ -167,78 +185,58 @@ async function loadMemberNews() {
             limit(5)
         );
 
-
-        const snapshot =
-            await getDocs(newsQuery);
-
+        const snapshot = await getDocs(newsQuery);
 
         if (snapshot.empty) {
-
-            memberNews.innerHTML = `
-                <div class="empty-message">
-                    لا توجد أخبار حاليًا.
-                </div>
+            newsContainer.innerHTML = `
+                <p class="empty-message">
+                    لا توجد أخبار حالياً.
+                </p>
             `;
-
             return;
         }
 
-
-        memberNews.innerHTML = "";
-
+        newsContainer.innerHTML = "";
 
         snapshot.forEach((docSnap) => {
 
-            const data =
-                docSnap.data();
+            const news = docSnap.data();
 
+            const item = document.createElement("div");
 
-            const article =
-                document.createElement("article");
+            item.className = "member-news-item";
 
-
-            article.className =
-                "member-news-card";
-
-
-            article.innerHTML = `
-                <h3>
-                    ${escapeHTML(data.title)}
-                </h3>
-
-                <p>
-                    ${escapeHTML(data.content)}
-                </p>
+            item.innerHTML = `
+                <h3>${escapeHtml(news.title || "خبر جديد")}</h3>
+                <p>${escapeHtml(news.description || news.content || "")}</p>
             `;
 
-
-            memberNews.appendChild(article);
+            newsContainer.appendChild(item);
         });
-
 
     } catch (error) {
 
-        console.error(
-            "خطأ في تحميل الأخبار:",
-            error
-        );
+        console.error("خطأ في تحميل الأخبار:", error);
 
-
-        memberNews.innerHTML = `
-            <div class="empty-message">
+        newsContainer.innerHTML = `
+            <p class="empty-message">
                 تعذر تحميل الأخبار.
-            </div>
+            </p>
         `;
     }
 }
 
 
-/* تحميل فعاليات العضو */
+// ===============================
+// آخر النشاطات
+// ===============================
 
 async function loadMemberActivities() {
 
-    if (!memberActivities) return;
+    const activitiesContainer =
+        document.getElementById("memberActivities");
 
+    if (!activitiesContainer) return;
 
     try {
 
@@ -248,73 +246,76 @@ async function loadMemberActivities() {
             limit(5)
         );
 
-
-        const snapshot =
-            await getDocs(activitiesQuery);
-
+        const snapshot = await getDocs(activitiesQuery);
 
         if (snapshot.empty) {
 
-            memberActivities.innerHTML = `
-                <div class="empty-message">
-                    لا توجد فعاليات حاليًا.
-                </div>
+            activitiesContainer.innerHTML = `
+                <p class="empty-message">
+                    لا توجد نشاطات حالياً.
+                </p>
             `;
 
             return;
         }
 
-
-        memberActivities.innerHTML = "";
-
+        activitiesContainer.innerHTML = "";
 
         snapshot.forEach((docSnap) => {
 
-            const data =
-                docSnap.data();
+            const activity = docSnap.data();
 
+            const item = document.createElement("div");
 
-            const article =
-                document.createElement("article");
+            item.className = "member-activity-item";
 
-
-            article.className =
-                "member-activity-card";
-
-
-            article.innerHTML = `
+            item.innerHTML = `
                 <h3>
-                    ${escapeHTML(data.title)}
+                    ${escapeHtml(activity.title || "نشاط جديد")}
                 </h3>
 
                 <p>
-                    ${escapeHTML(data.content)}
+                    ${escapeHtml(
+                        activity.description ||
+                        activity.content ||
+                        ""
+                    )}
                 </p>
             `;
 
-
-            memberActivities.appendChild(article);
+            activitiesContainer.appendChild(item);
         });
-
 
     } catch (error) {
 
-        console.error(
-            "خطأ في تحميل الفعاليات:",
-            error
-        );
+        console.error("خطأ في تحميل النشاطات:", error);
 
-
-        memberActivities.innerHTML = `
-            <div class="empty-message">
-                تعذر تحميل الفعاليات.
-            </div>
+        activitiesContainer.innerHTML = `
+            <p class="empty-message">
+                تعذر تحميل النشاطات.
+            </p>
         `;
     }
 }
 
 
-/* التحقق من تسجيل الدخول */
+// ===============================
+// حماية النصوص من HTML
+// ===============================
+
+function escapeHtml(value) {
+
+    const div = document.createElement("div");
+
+    div.textContent = value ?? "";
+
+    return div.innerHTML;
+}
+
+
+// ===============================
+// مراقبة تسجيل الدخول
+// ===============================
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -325,10 +326,12 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
-
+    // تحميل بيانات العضو
     await loadMemberData(user);
 
+    // تحميل الأخبار إذا كانت موجودة بالصفحة
     await loadMemberNews();
 
+    // تحميل النشاطات إذا كانت موجودة بالصفحة
     await loadMemberActivities();
 });
