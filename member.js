@@ -7,286 +7,131 @@ import {
     getDoc
 } from "./firebase.js";
 
-
-// ===============================
-// عناصر الصفحة
-// ===============================
-
 const memberLoading = document.getElementById("memberLoading");
 const memberData = document.getElementById("memberData");
-
-const welcomeName = document.getElementById("welcomeName");
-const avatarLetter = document.getElementById("avatarLetter");
-
-const memberFullName = document.getElementById("memberFullName");
-const memberPhone = document.getElementById("memberPhone");
-const memberBirthDate = document.getElementById("memberBirthDate");
-const memberGender = document.getElementById("memberGender");
-const memberEducation = document.getElementById("memberEducation");
-const memberSpecialization = document.getElementById("memberSpecialization");
-const memberJob = document.getElementById("memberJob");
-const memberEmail = document.getElementById("memberEmail");
-
 const logoutBtn = document.getElementById("logoutBtn");
-const currentYear = document.getElementById("currentYear");
 
-
-// ===============================
-// السنة الحالية
-// ===============================
-
-if (currentYear) {
-    currentYear.textContent = new Date().getFullYear();
+function safeText(value) {
+    return value !== undefined && value !== null && String(value).trim() !== ""
+        ? String(value)
+        : "—";
 }
 
+function getGenderText(gender) {
+    if (gender === "male") return "ذكر";
+    if (gender === "female") return "أنثى";
+    return "—";
+}
 
-// ===============================
-// تعبئة النصوص
-// ===============================
+function getEducationText(education) {
+    const map = {
+        primary: "ابتدائية",
+        middle: "متوسطة",
+        secondary: "إعدادية",
+        "high-school": "إعدادية",
+        diploma: "دبلوم",
+        bachelor: "بكالوريوس",
+        master: "ماجستير",
+        phd: "دكتوراه",
+        other: "أخرى"
+    };
+    return map[education] || safeText(education);
+}
 
-function setText(element, value) {
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = safeText(value);
+}
 
-    if (!element) return;
+function showMemberPage() {
+    if (memberLoading) {
+        memberLoading.classList.add("hidden");
+        memberLoading.style.display = "none";
+    }
 
-    if (
-        value !== undefined &&
-        value !== null &&
-        String(value).trim() !== ""
-    ) {
-        element.textContent = value;
-    } else {
-        element.textContent = "—";
+    if (memberData) {
+        memberData.classList.remove("hidden");
+        memberData.style.display = "block";
     }
 }
 
+function showMemberError(message) {
+    console.error(message);
 
-// ===============================
-// أول حرف من الاسم
-// ===============================
-
-function getFirstLetter(name) {
-
-    if (!name || String(name).trim() === "") {
-        return "ع";
+    if (memberLoading) {
+        memberLoading.classList.remove("hidden");
+        memberLoading.style.display = "block";
+        memberLoading.innerHTML = `
+            <div style="text-align:center;padding:30px 15px;">
+                <h2 style="color:#b42318;margin-bottom:10px;">تعذر تحميل بياناتك</h2>
+                <p>${safeText(message)}</p>
+                <button type="button" onclick="location.reload()" style="margin-top:15px;padding:10px 20px;border:0;border-radius:10px;cursor:pointer;">
+                    إعادة المحاولة
+                </button>
+            </div>
+        `;
     }
-
-    return String(name).trim().charAt(0);
 }
-
-
-// ===============================
-// تحميل بيانات العضو
-// ===============================
 
 async function loadMemberData(user) {
-
     try {
-
-        console.log("بدأ تحميل بيانات العضو...");
-        console.log("UID:", user.uid);
-
         const memberRef = doc(db, "members", user.uid);
+        const memberSnapshot = await getDoc(memberRef);
 
-        const memberSnap = await getDoc(memberRef);
-
-        console.log("هل توجد بيانات العضو؟", memberSnap.exists());
-
-        if (!memberSnap.exists()) {
-
-            throw new Error(
-                "لم يتم العثور على بيانات العضو في Firestore."
-            );
-        }
-
-        const data = memberSnap.data();
-
-        console.log("بيانات العضو:", data);
-
-
-        // ===============================
-        // الاسم
-        // ===============================
-
-        const fullName =
-            data.fullName ||
-            data.name ||
-            user.displayName ||
-            "عضو الفريق";
-
-
-        // ===============================
-        // تعبئة البيانات
-        // ===============================
-
-        setText(welcomeName, fullName);
-
-        setText(
-            avatarLetter,
-            getFirstLetter(fullName)
-        );
-
-        setText(memberFullName, fullName);
-
-        setText(
-            memberPhone,
-            data.phone
-        );
-
-        setText(
-            memberBirthDate,
-            data.birthDate
-        );
-
-        setText(
-            memberGender,
-            data.gender
-        );
-
-        setText(
-            memberEducation,
-            data.education
-        );
-
-        setText(
-            memberSpecialization,
-            data.specialization
-        );
-
-        setText(
-            memberJob,
-            data.job
-        );
-
-        setText(
-            memberEmail,
-            user.email
-        );
-
-
-        // ===============================
-        // إظهار بيانات العضو
-        // ===============================
-
-        if (memberLoading) {
-            memberLoading.style.display = "none";
-        }
-
-        if (memberData) {
-            memberData.classList.remove("hidden");
-        }
-
-        console.log("تم تحميل بيانات العضو بنجاح ✅");
-
-    } catch (error) {
-
-        console.error(
-            "خطأ في تحميل بيانات العضو:",
-            error
-        );
-
-
-        // إخفاء التحميل
-
-        if (memberLoading) {
-            memberLoading.innerHTML = `
-                <div style="
-                    text-align:center;
-                    padding:30px 15px;
-                ">
-
-                    <h2 style="
-                        margin-bottom:10px;
-                        color:#b42318;
-                    ">
-                        تعذر تحميل بياناتك
-                    </h2>
-
-                    <p style="
-                        margin-bottom:15px;
-                    ">
-                        حدث خطأ أثناء جلب بيانات العضو.
-                    </p>
-
-                    <button
-                        type="button"
-                        onclick="location.reload()"
-                        style="
-                            border:0;
-                            padding:10px 20px;
-                            border-radius:10px;
-                            cursor:pointer;
-                        "
-                    >
-                        إعادة المحاولة
-                    </button>
-
-                </div>
-            `;
-        }
-
-    }
-}
-
-
-// ===============================
-// تسجيل الخروج
-// ===============================
-
-if (logoutBtn) {
-
-    logoutBtn.addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                await signOut(auth);
-
-                window.location.href = "index.html";
-
-            } catch (error) {
-
-                console.error(
-                    "خطأ في تسجيل الخروج:",
-                    error
-                );
-
-                alert(
-                    "حدث خطأ أثناء تسجيل الخروج."
-                );
-            }
-        }
-    );
-}
-
-
-// ===============================
-// مراقبة تسجيل الدخول
-// ===============================
-
-onAuthStateChanged(
-    auth,
-    async (user) => {
-
-        console.log(
-            "حالة تسجيل الدخول:",
-            user
-        );
-
-
-        // إذا ماكو تسجيل دخول
-
-        if (!user) {
-
-            window.location.href = "index.html";
-
+        if (!memberSnapshot.exists()) {
+            showMemberError("لم يتم العثور على بيانات هذا الحساب في قاعدة البيانات.");
             return;
         }
 
+        const data = memberSnapshot.data();
+        const fullName = safeText(data.fullName || data.name || user.displayName || "عضو الفريق");
 
-        // تحميل بيانات العضو
+        setText("welcomeName", fullName);
+        setText("memberFullName", fullName);
+        setText("memberPhone", data.phone);
+        setText("memberBirthDate", data.birthDate);
+        setText("memberGender", getGenderText(data.gender));
+        setText("memberEducation", getEducationText(data.education));
+        setText("memberSpecialization", data.specialization);
+        setText("memberJob", data.job);
+        setText("memberEmail", data.email || user.email);
 
-        await loadMemberData(user);
+        const avatarLetter = document.getElementById("avatarLetter");
+        if (avatarLetter) {
+            avatarLetter.textContent = fullName.charAt(0) || "ع";
+        }
 
+        showMemberPage();
+        console.log("تم تحميل بيانات العضو بنجاح ✅");
+
+    } catch (error) {
+        console.error("خطأ في تحميل بيانات العضو:", error);
+        showMemberError(error.message || "حدث خطأ أثناء جلب بيانات العضو.");
     }
-);
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    await loadMemberData(user);
+});
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        try {
+            await signOut(auth);
+            window.location.href = "index.html";
+        } catch (error) {
+            console.error(error);
+            alert("حدث خطأ أثناء تسجيل الخروج.");
+        }
+    });
+}
+
+const currentYear = document.getElementById("currentYear");
+if (currentYear) {
+    currentYear.textContent = new Date().getFullYear();
+}

@@ -9,87 +9,89 @@
 </head>
 <body>
 <header class="admin-header">
-    <div class="container admin-navbar">
-        <div class="admin-logo">
-            <img src="assets/team-logo.jpg" alt="شعار الفريق">
-            <div><h1>لوحة الإدارة</h1><p>فريق شمال واسط الثقافي التطوعي</p></div>
-        </div>
-        <div class="admin-header-actions">
-            <a class="btn btn-outline" href="index.html">الرئيسية</a>
-            <a class="btn btn-outline" href="inquiries.html">الاستفسارات</a>
-            <button id="adminLogoutBtn" class="btn btn-primary" type="button">تسجيل الخروج</button>
-        </div>
+  <div class="container admin-navbar">
+    <div class="admin-logo">
+      <div class="admin-logo-icon">⚙️</div>
+      <div><h1>لوحة الإدارة</h1><p>فريق شمال واسط الثقافي التطوعي</p></div>
     </div>
+    <button id="adminLogoutBtn" class="btn btn-outline" type="button">تسجيل الخروج</button>
+  </div>
 </header>
-
 <main class="admin-page">
-<div class="container admin-main">
-    <div id="adminMessage" class="admin-message">جاري التحقق من صلاحية الإدارة...</div>
+<div class="container">
+  <div id="adminMessage" class="admin-message">جاري التحقق من صلاحية الإدارة...</div>
+  <section id="adminContent" class="hidden">
+    <div class="admin-title">
+      <span class="admin-badge">🛠️ الإدارة</span>
+      <h2>إدارة فريق شمال واسط</h2>
+      <p>من هنا تقدر تنشر المحتوى بالكتابة والصورة، وتتابع الاستفسارات وترد عليها.</p>
+    </div>
 
-    <section id="adminContent" class="hidden">
-        <div class="admin-intro">
-            <span class="admin-badge">🛠️ الإدارة</span>
-            <h1>إدارة محتوى فريق شمال واسط</h1>
-            <p>من هنا تنشرين الأخبار والصحة والبيئة والمقالات والفعاليات، وتتابعين أعضاء الفريق.</p>
+    <div class="admin-card admin-publish-card">
+      <div class="admin-card-header">
+        <div class="admin-card-icon">✦</div>
+        <div><h3>نشر محتوى جديد</h3><p>اختار القسم، اكتب المحتوى، واختار الصورة مباشرة من جهازك.</p></div>
+      </div>
+      <form id="postForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="postCategory">القسم</label>
+            <select id="postCategory" required>
+              <option value="news">الأخبار</option>
+              <option value="health">الصحة</option>
+              <option value="environment">البيئة</option>
+              <option value="articles">المقالات</option>
+              <option value="activities">الفعاليات</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="postTitle">العنوان</label>
+            <input type="text" id="postTitle" placeholder="اكتب عنوان المنشور" required>
+          </div>
         </div>
+        <div class="form-group">
+          <label for="postContent">الشرح / المحتوى</label>
+          <textarea id="postContent" placeholder="اكتب شرح المنشور هنا..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="postImage">الصورة</label>
+          <input type="file" id="postImage" accept="image/*">
+          <small class="file-help">اضغط اختيار ملف واختر الصورة من معرض الصور في جهازك. لا تحتاج تكتب أي رابط.</small>
+          <div id="postImagePreview" class="post-image-preview hidden"></div>
+        </div>
+        <button type="submit" class="btn btn-primary form-submit">📤 نشر المحتوى</button>
+      </form>
+    </div>
 
-        <section class="admin-card publish-card">
-            <div class="admin-card-header">
-                <div class="admin-card-icon">✦</div>
-                <div><span>نشر جديد</span><h2>إضافة منشور</h2><p>اختاري القسم وأضيفي النص والصورة إن وجدت.</p></div>
-            </div>
-            <form id="postForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="postCategory">القسم</label>
-                        <select id="postCategory" required>
-                            <option value="news">الأخبار</option>
-                            <option value="health">الصحة</option>
-                            <option value="environment">البيئة</option>
-                            <option value="articles">المقالات</option>
-                            <option value="activities">الفعاليات</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="postTitle">العنوان</label>
-                        <input id="postTitle" type="text" placeholder="اكتب عنوان المنشور" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="postContent">المحتوى</label>
-                    <textarea id="postContent" placeholder="اكتب تفاصيل المنشور هنا..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="postImage">رابط الصورة (اختياري)</label>
-                    <input id="postImage" type="url" placeholder="https://example.com/image.jpg">
-                    <small class="field-help">يمكن تركه فارغًا. رفع الصور كملفات يحتاج Firebase Storage، لذلك لا نضع ملفًا داخل Firestore.</small>
-                </div>
-                <button class="btn btn-primary form-submit" type="submit">نشر المنشور</button>
-            </form>
-        </section>
-
-        <section class="admin-section">
-            <div class="admin-section-header">
-                <div><span class="admin-badge">🗂️ المحتوى</span><h2>المنشورات الجديدة</h2><p>إدارة المنشورات التي تنشرينها من النموذج الموحد.</p></div>
-            </div>
-            <div id="adminPostsList" class="admin-content-list"><div class="members-loading">جاري تحميل المنشورات...</div></div>
-        </section>
-
-        <section class="admin-section">
-            <div class="admin-section-header">
-                <div><span class="admin-badge">👥 الأعضاء</span><h2>أعضاء الفريق</h2><p>قائمة الأشخاص المسجلين في الفريق.</p></div>
-                <div id="membersCount" class="members-count">0 عضو</div>
-            </div>
-            <div id="membersList" class="members-list"><div class="members-loading">جاري تحميل الأعضاء...</div></div>
-        </section>
+    <section class="admin-section">
+      <div class="admin-section-header"><div><span class="admin-badge">💬 الاستفسارات</span><h2>إدارة الاستفسارات</h2><p>هنا تظهر استفسارات الزوار وتكدر تقرأها وترد عليها مباشرة.</p></div><div id="inquiriesCount" class="members-count">0 استفسار</div></div>
+      <div id="adminInquiriesList" class="admin-content-list"><div class="members-loading">جاري تحميل الاستفسارات...</div></div>
     </section>
+
+    <section class="admin-section">
+      <div class="admin-section-header"><div><span class="admin-badge">📰 الأخبار</span><h2>الأخبار المنشورة</h2></div></div>
+      <div id="adminNewsList" class="admin-content-list"><div class="members-loading">جاري تحميل الأخبار...</div></div>
+    </section>
+
+    <section class="admin-section">
+      <div class="admin-section-header"><div><span class="admin-badge">🎯 الفعاليات</span><h2>الفعاليات المنشورة</h2></div></div>
+      <div id="adminActivitiesList" class="admin-content-list"><div class="members-loading">جاري تحميل الفعاليات...</div></div>
+    </section>
+
+    <section class="admin-section">
+      <div class="admin-section-header"><div><span class="admin-badge">🗂️ المحتوى</span><h2>الصحة والبيئة والمقالات</h2><p>إدارة المنشورات الموجودة في هذه الأقسام.</p></div></div>
+      <div id="adminPostsList" class="admin-content-list"><div class="members-loading">جاري تحميل المحتوى...</div></div>
+    </section>
+
+    <section class="admin-section">
+      <div class="admin-section-header"><div><span class="admin-badge">👥 الأعضاء</span><h2>أعضاء الفريق</h2><p>قائمة الأشخاص المسجلين في الفريق.</p></div><div id="membersCount" class="members-count">0 عضو</div></div>
+      <div id="membersList" class="members-list"><div class="members-loading">جاري تحميل الأعضاء...</div></div>
+    </section>
+  </section>
 </div>
 </main>
-
 <div id="adminToast" class="toast"></div>
-<footer class="footer">
-    <div class="footer-bottom">© <span id="currentYear"></span> فريق شمال واسط الثقافي التطوعي. جميع الحقوق محفوظة.</div>
-</footer>
+<footer class="footer"><div class="container footer-content"><div><h3>فريق شمال واسط الثقافي التطوعي</h3><p>© <span id="currentYear"></span> جميع الحقوق محفوظة</p></div><div class="footer-links"><a href="index.html">الرئيسية</a><a href="member.html">حسابي</a></div></div></footer>
 <script type="module" src="admin.js"></script>
 </body>
 </html>
