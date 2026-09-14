@@ -1166,4 +1166,31 @@ font-size:29px;
 .logo-text strong{
 font-size:13px;
 }
+.social-links a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.25s ease;
+}
+
+.social-links a:hover {
+    transform: translateX(-4px);
+}
+
+.social-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    font-size: 15px;
+    font-weight: 800;
+
+    flex-shrink: 0;
+}
 }
