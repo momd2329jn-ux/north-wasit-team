@@ -1,34 +1,49 @@
-<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<head>
 
-<meta name="description"
-      content="استفسارات أعضاء فريق شمال واسط الثقافي التطوعي">
+    <meta charset="UTF-8">
 
-<title>استفسارات الأعضاء | فريق شمال واسط الثقافي التطوعي</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<link rel="preconnect"
-      href="https://fonts.googleapis.com">
+    <meta name="description"
+          content="استفسارات المواطنين - فريق شمال واسط الثقافي التطوعي">
 
-<link rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin>
+    <title>
+        استفسارات المواطنين | فريق شمال واسط الثقافي التطوعي
+    </title>
 
-<link
-    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
 
-<link rel="stylesheet"
-      href="inquiries.css">
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
 
-</head><body class="inquiries-page"><!-- HEADER -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="inquiries.css">
+
+</head>
+
+
+<body class="inquiries-page">
+
+
+<!-- =========================
+     HEADER
+========================== -->
 
 <header class="inquiry-header">
 
     <div class="inquiry-header-inner">
 
-        <a href="member.html"
+        <a href="index.html"
            class="inquiry-logo">
 
             <div class="inquiry-logo-image">
@@ -52,21 +67,12 @@
 
         <div class="inquiry-actions">
 
-            <a href="member.html"
+            <a href="index.html"
                class="back-member">
 
-                حسابي
+                الرئيسية
 
             </a>
-
-            <button
-                id="logoutBtn"
-                class="inquiry-logout"
-                type="button">
-
-                تسجيل الخروج
-
-            </button>
 
         </div>
 
@@ -76,7 +82,9 @@
 
 
 
-<!-- MAIN -->
+<!-- =========================
+     MAIN
+========================== -->
 
 <main>
 
@@ -88,16 +96,16 @@
         <div class="container">
 
             <span class="inquiry-badge">
-                ✦ خدمة خاصة بالأعضاء
+                ✦ خدمة المواطنين
             </span>
 
             <h1>
-                استفسارات الأعضاء
+                استفسارات المواطنين
             </h1>
 
             <p>
-                تواصل مع إدارة فريق شمال واسط الثقافي التطوعي
-                وأرسل استفسارك بسهولة.
+                عندك سؤال أو استفسار؟
+                تواصل مباشرة مع إدارة فريق شمال واسط الثقافي التطوعي.
             </p>
 
         </div>
@@ -135,6 +143,7 @@
                 </div>
 
 
+
                 <form id="inquiryForm">
 
 
@@ -150,10 +159,6 @@
 
                             <option value="">
                                 اختر نوع الاستفسار
-                            </option>
-
-                            <option value="العضوية">
-                                العضوية
                             </option>
 
                             <option value="الفعاليات">
@@ -172,6 +177,10 @@
                                 شكوى
                             </option>
 
+                            <option value="استفسار عام">
+                                استفسار عام
+                            </option>
+
                             <option value="أخرى">
                                 أخرى
                             </option>
@@ -179,6 +188,7 @@
                         </select>
 
                     </div>
+
 
 
                     <div class="form-group">
@@ -197,6 +207,7 @@
                     </div>
 
 
+
                     <div class="form-group">
 
                         <label for="inquiryMessage">
@@ -211,6 +222,7 @@
                             required></textarea>
 
                     </div>
+
 
 
                     <button
@@ -241,7 +253,7 @@
             <div class="section-heading">
 
                 <span>
-                    ملفي
+                    المتابعة
                 </span>
 
                 <h2>
@@ -249,7 +261,7 @@
                 </h2>
 
                 <p>
-                    يمكنك متابعة استفساراتك والردود عليها من هنا.
+                    تقدر تتابع استفساراتك والردود عليها من هذا الجهاز.
                 </p>
 
             </div>
@@ -269,9 +281,12 @@
 
     </section>
 
+
 </main>
 
 
+
+<!-- Toast -->
 
 <div
     id="inquiryToast"
@@ -280,10 +295,13 @@
 </div>
 
 
+
 <script
     type="module"
     src="inquiries.js">
 </script>
 
+
 </body>
+
 </html>

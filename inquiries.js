@@ -1,21 +1,19 @@
 import {
-    auth,
     db,
-    onAuthStateChanged,
-    signOut,
     collection,
-    addDoc,
+    setDoc,
+    getDoc,
+    doc,
     getDocs,
     query,
-    where,
     orderBy,
     serverTimestamp
 } from "./firebase.js";
 
 
-/* =========================
-   العناصر
-========================= */
+// ===============================
+// عناصر الصفحة
+// ===============================
 
 const inquiryForm =
     document.getElementById("inquiryForm");
@@ -35,37 +33,45 @@ const inquiriesList =
 const inquiryToast =
     document.getElementById("inquiryToast");
 
-const logoutBtn =
-    document.getElementById("logoutBtn");
+
+// ===============================
+// مفتاح المتابعة
+// ===============================
+
+const STORAGE_KEY =
+    "northWasitInquiryIds";
 
 
-let currentUser = null;
+// ===============================
+// الإشعارات
+// ===============================
 
-
-/* =========================
-   الإشعارات
-========================= */
-
-function showToast(message, type = "success") {
+function showToast(
+    message,
+    type = "success"
+) {
 
     if (!inquiryToast) return;
 
-    inquiryToast.textContent = message;
+    inquiryToast.textContent =
+        message;
 
     inquiryToast.className =
         `inquiry-toast ${type} show`;
 
     setTimeout(() => {
 
-        inquiryToast.classList.remove("show");
+        inquiryToast.classList.remove(
+            "show"
+        );
 
     }, 3500);
 }
 
 
-/* =========================
-   حماية النصوص
-========================= */
+// ===============================
+// حماية النصوص
+// ===============================
 
 function escapeHTML(value) {
 
@@ -78,9 +84,9 @@ function escapeHTML(value) {
 }
 
 
-/* =========================
-   التاريخ
-========================= */
+// ===============================
+// التاريخ
+// ===============================
 
 function formatDate(timestamp) {
 
@@ -111,9 +117,9 @@ function formatDate(timestamp) {
 }
 
 
-/* =========================
-   حالة الاستفسار
-========================= */
+// ===============================
+// حالة الاستفسار
+// ===============================
 
 function getStatusInfo(status) {
 
@@ -142,68 +148,83 @@ function getStatusInfo(status) {
 }
 
 
-/* =========================
-   التحقق من الدخول
-========================= */
+// ===============================
+// إنشاء رقم متابعة عشوائي
+// ===============================
 
-onAuthStateChanged(
-    auth,
-    async (user) => {
+function createInquiryId() {
 
-        if (!user) {
+    const array =
+        new Uint8Array(24);
 
-            window.location.href =
-                "index.html";
+    crypto.getRandomValues(array);
 
-            return;
-        }
-
-
-        currentUser = user;
-
-
-        await loadMyInquiries();
-    }
-);
-
-
-/* =========================
-   تسجيل الخروج
-========================= */
-
-if (logoutBtn) {
-
-    logoutBtn.addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                await signOut(auth);
-
-                window.location.href =
-                    "index.html";
-
-            } catch (error) {
-
-                console.error(
-                    "خطأ أثناء تسجيل الخروج:",
-                    error
-                );
-
-                showToast(
-                    "حدث خطأ أثناء تسجيل الخروج.",
-                    "error"
-                );
-            }
-        }
-    );
+    return Array.from(array)
+        .map(
+            byte =>
+                byte
+                    .toString(16)
+                    .padStart(2, "0")
+        )
+        .join("");
 }
 
 
-/* =========================
-   إرسال الاستفسار
-========================= */
+// ===============================
+// جلب أرقام الاستفسارات المحفوظة
+// ===============================
+
+function getSavedInquiryIds() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+        if (!saved) {
+            return [];
+        }
+
+        const ids =
+            JSON.parse(saved);
+
+        return Array.isArray(ids)
+            ? ids
+            : [];
+
+    } catch {
+
+        return [];
+    }
+}
+
+
+// ===============================
+// حفظ رقم الاستفسار
+// ===============================
+
+function saveInquiryId(id) {
+
+    const ids =
+        getSavedInquiryIds();
+
+    if (!ids.includes(id)) {
+
+        ids.push(id);
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(ids)
+        );
+    }
+}
+
+
+// ===============================
+// إرسال الاستفسار
+// ===============================
 
 if (inquiryForm) {
 
@@ -214,38 +235,19 @@ if (inquiryForm) {
             event.preventDefault();
 
 
-            /* -------------------------
-               التأكد من تسجيل الدخول
-            ------------------------- */
-
-            if (!currentUser) {
-
-                showToast(
-                    "يجب تسجيل الدخول أولاً.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            /* -------------------------
-               قراءة البيانات
-            ------------------------- */
-
             const type =
                 inquiryType?.value.trim() || "";
 
+
             const subject =
                 inquirySubject?.value.trim() || "";
+
 
             const message =
                 inquiryMessage?.value.trim() || "";
 
 
-            /* -------------------------
-               التحقق
-            ------------------------- */
+            // التحقق
 
             if (!type) {
 
@@ -253,8 +255,6 @@ if (inquiryForm) {
                     "يرجى اختيار نوع الاستفسار.",
                     "error"
                 );
-
-                inquiryType?.focus();
 
                 return;
             }
@@ -267,8 +267,6 @@ if (inquiryForm) {
                     "error"
                 );
 
-                inquirySubject?.focus();
-
                 return;
             }
 
@@ -280,19 +278,13 @@ if (inquiryForm) {
                     "error"
                 );
 
-                inquiryMessage?.focus();
-
                 return;
             }
 
 
-            /* -------------------------
-               زر الإرسال
-            ------------------------- */
-
             const submitButton =
-                inquiryForm.querySelector(
-                    'button[type="submit"]'
+                document.getElementById(
+                    "sendInquiryBtn"
                 );
 
 
@@ -306,28 +298,31 @@ if (inquiryForm) {
 
                 if (submitButton) {
 
-                    submitButton.disabled = true;
+                    submitButton.disabled =
+                        true;
 
                     submitButton.textContent =
                         "جاري الإرسال...";
                 }
 
 
-                /* -------------------------
-                   بيانات الاستفسار
-                ------------------------- */
+                // إنشاء رقم سري للاستفسار
+
+                const inquiryId =
+                    createInquiryId();
+
+
+                // البيانات
 
                 const inquiryData = {
 
-                    userId:
-                        currentUser.uid,
+                    userId: null,
 
                     userName:
-                        currentUser.displayName ||
-                        "عضو الفريق",
+                        "مواطن",
 
                     userEmail:
-                        currentUser.email || "",
+                        "",
 
                     type:
                         type,
@@ -352,29 +347,26 @@ if (inquiryForm) {
                 };
 
 
-                /* -------------------------
-                   الحفظ في Firebase
-                ------------------------- */
+                // الحفظ بنفس رقم المتابعة
 
-                const inquiryRef =
-                    await addDoc(
-                        collection(
-                            db,
-                            "inquiries"
-                        ),
-                        inquiryData
-                    );
-
-
-                console.log(
-                    "تم حفظ الاستفسار:",
-                    inquiryRef.id
+                await setDoc(
+                    doc(
+                        db,
+                        "inquiries",
+                        inquiryId
+                    ),
+                    inquiryData
                 );
 
 
-                /* -------------------------
-                   نجاح
-                ------------------------- */
+                // حفظ الرقم بالجهاز
+
+                saveInquiryId(
+                    inquiryId
+                );
+
+
+                // تنظيف النموذج
 
                 inquiryForm.reset();
 
@@ -384,6 +376,8 @@ if (inquiryForm) {
                     "success"
                 );
 
+
+                // تحميل الاستفسارات
 
                 await loadMyInquiries();
 
@@ -396,30 +390,18 @@ if (inquiryForm) {
                 );
 
 
-                if (
-                    error?.code ===
-                    "permission-denied"
-                ) {
-
-                    showToast(
-                        "ليس لديك صلاحية إرسال الاستفسار.",
-                        "error"
-                    );
-
-                } else {
-
-                    showToast(
-                        "تعذر إرسال الاستفسار، حاول مرة ثانية.",
-                        "error"
-                    );
-                }
+                showToast(
+                    "تعذر إرسال الاستفسار، حاول مرة ثانية.",
+                    "error"
+                );
 
 
             } finally {
 
                 if (submitButton) {
 
-                    submitButton.disabled = false;
+                    submitButton.disabled =
+                        false;
 
                     submitButton.textContent =
                         originalText;
@@ -430,16 +412,42 @@ if (inquiryForm) {
 }
 
 
-/* =========================
-   تحميل استفسارات العضو
-========================= */
+// ===============================
+// تحميل استفسارات هذا الجهاز
+// ===============================
 
 async function loadMyInquiries() {
 
-    if (
-        !inquiriesList ||
-        !currentUser
-    ) {
+    if (!inquiriesList) return;
+
+
+    const ids =
+        getSavedInquiryIds();
+
+
+    if (ids.length === 0) {
+
+        inquiriesList.innerHTML = `
+
+            <div class="empty-inquiries">
+
+                <div class="empty-icon">
+                    💬
+                </div>
+
+                <h3>
+                    ما عندك استفسارات سابقة
+                </h3>
+
+                <p>
+                    أرسل استفسارك من النموذج أعلاه
+                    وسيظهر هنا.
+                </p>
+
+            </div>
+
+        `;
+
         return;
     }
 
@@ -447,60 +455,65 @@ async function loadMyInquiries() {
     try {
 
         inquiriesList.innerHTML = `
+
             <div class="loading-message">
                 جاري تحميل استفساراتك...
             </div>
+
         `;
 
 
-        /* -------------------------
-           جلب استفسارات هذا العضو فقط
-        ------------------------- */
-
-        const inquiriesQuery =
-            query(
-                collection(
-                    db,
-                    "inquiries"
-                ),
-
-                where(
-                    "userId",
-                    "==",
-                    currentUser.uid
-                )
-            );
+        const inquiries = [];
 
 
-        const snapshot =
-            await getDocs(
-                inquiriesQuery
-            );
+        // جلب كل استفسار بواسطة رقم المتابعة
+
+        for (const id of ids) {
+
+            try {
+
+                const inquiryRef =
+                    doc(
+                        db,
+                        "inquiries",
+                        id
+                    );
 
 
-        const myInquiries = [];
+                const snapshot =
+                    await getDoc(
+                        inquiryRef
+                    );
 
 
-        snapshot.forEach(
-            (docSnap) => {
+                if (
+                    snapshot.exists()
+                ) {
 
-                const data =
-                    docSnap.data();
+                    inquiries.push({
 
+                        id:
+                            snapshot.id,
 
-                myInquiries.push({
-                    id: docSnap.id,
-                    ...data
-                });
+                        ...snapshot.data()
+
+                    });
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "تعذر تحميل الاستفسار:",
+                    id,
+                    error
+                );
             }
-        );
+        }
 
 
-        /* -------------------------
-           ترتيب الأحدث أولًا
-        ------------------------- */
+        // الأحدث أولًا
 
-        myInquiries.sort(
+        inquiries.sort(
             (a, b) => {
 
                 const dateA =
@@ -508,25 +521,22 @@ async function loadMyInquiries() {
                         ? a.createdAt.toMillis()
                         : 0;
 
+
                 const dateB =
                     b.createdAt?.toMillis
                         ? b.createdAt.toMillis()
                         : 0;
+
 
                 return dateB - dateA;
             }
         );
 
 
-        /* -------------------------
-           لا توجد استفسارات
-        ------------------------- */
-
-        if (
-            myInquiries.length === 0
-        ) {
+        if (inquiries.length === 0) {
 
             inquiriesList.innerHTML = `
+
                 <div class="empty-inquiries">
 
                     <div class="empty-icon">
@@ -534,39 +544,36 @@ async function loadMyInquiries() {
                     </div>
 
                     <h3>
-                        ما عندك استفسارات حالياً
+                        ما عندك استفسارات سابقة
                     </h3>
 
                     <p>
-                        أرسل استفسارك من النموذج أعلاه
-                        وسيظهر هنا بعد إرساله.
+                        أرسل استفسارك من النموذج أعلاه.
                     </p>
 
                 </div>
+
             `;
 
             return;
         }
 
 
-        /* -------------------------
-           عرض الاستفسارات
-        ------------------------- */
-
         renderInquiries(
-            myInquiries
+            inquiries
         );
 
 
     } catch (error) {
 
         console.error(
-            "خطأ أثناء تحميل استفسارات العضو:",
+            "خطأ في تحميل الاستفسارات:",
             error
         );
 
 
         inquiriesList.innerHTML = `
+
             <div class="empty-inquiries error-state">
 
                 <div class="empty-icon">
@@ -582,14 +589,15 @@ async function loadMyInquiries() {
                 </p>
 
             </div>
+
         `;
     }
 }
 
 
-/* =========================
-   عرض الاستفسارات
-========================= */
+// ===============================
+// عرض الاستفسارات
+// ===============================
 
 function renderInquiries(
     inquiries
@@ -604,15 +612,12 @@ function renderInquiries(
     inquiries.forEach(
         (inquiry) => {
 
+
             const statusInfo =
                 getStatusInfo(
                     inquiry.status
                 );
 
-
-            /* -------------------------
-               الرد
-            ------------------------- */
 
             let replyHTML = "";
 
@@ -623,6 +628,7 @@ function renderInquiries(
             ) {
 
                 replyHTML = `
+
                     <div class="inquiry-reply">
 
                         <div class="reply-header">
@@ -657,11 +663,13 @@ function renderInquiries(
                         }
 
                     </div>
+
                 `;
 
             } else {
 
                 replyHTML = `
+
                     <div class="waiting-reply">
 
                         <span>
@@ -671,13 +679,10 @@ function renderInquiries(
                         بانتظار رد الإدارة
 
                     </div>
+
                 `;
             }
 
-
-            /* -------------------------
-               البطاقة
-            ------------------------- */
 
             const card =
                 document.createElement(
@@ -696,15 +701,19 @@ function renderInquiries(
                     <div class="inquiry-card-title">
 
                         <span class="inquiry-type">
+
                             ${escapeHTML(
                                 inquiry.type
                             )}
+
                         </span>
 
                         <h3>
+
                             ${escapeHTML(
                                 inquiry.subject
                             )}
+
                         </h3>
 
                     </div>
@@ -714,16 +723,20 @@ function renderInquiries(
                         inquiry-status
                         ${statusInfo.className}
                     ">
+
                         ${statusInfo.text}
+
                     </span>
 
                 </div>
 
 
                 <p class="inquiry-message">
+
                     ${escapeHTML(
                         inquiry.message
                     )}
+
                 </p>
 
 
@@ -748,6 +761,14 @@ function renderInquiries(
             inquiriesList.appendChild(
                 card
             );
+
         }
     );
 }
+
+
+// ===============================
+// تشغيل الصفحة
+// ===============================
+
+loadMyInquiries();
