@@ -1,756 +1,757 @@
-import {
-    auth,
-    db,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged,
-    updateProfile,
-    doc,
-    setDoc,
-    getDoc,
-    collection,
-    getDocs,
-    query,
-    orderBy,
-    limit,
-    serverTimestamp,
-    where
-} from "./firebase.js";
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>فريق شمال واسط الثقافي التطوعي</title>
 
-// ================================
-// ELEMENTS
-// ================================
+    <link rel="stylesheet" href="style.css">
 
-const socialModal = document.getElementById("socialModal");
-const loginModal = document.getElementById("loginModal");
-const joinModal = document.getElementById("joinModal");
-
-const loginForm = document.getElementById("loginForm");
-const joinForm = document.getElementById("joinForm");
-
-const loginMessage = document.getElementById("loginMessage");
-const joinMessage = document.getElementById("joinMessage");
-
-
-// ================================
-// GLOBAL MODAL FUNCTIONS
-// ================================
-
-window.openSocial = function () {
-    if (socialModal) {
-        socialModal.classList.add("show");
-    }
-};
-
-window.closeSocial = function () {
-    if (socialModal) {
-        socialModal.classList.remove("show");
-    }
-};
-
-
-window.openLogin = function () {
-    closeJoin();
-
-    if (loginModal) {
-        loginModal.classList.add("show");
-    }
-};
-
-
-window.closeLogin = function () {
-    if (loginModal) {
-        loginModal.classList.remove("show");
-    }
-};
-
-
-window.openJoin = function () {
-    closeLogin();
-
-    if (joinModal) {
-        joinModal.classList.add("show");
-    }
-};
-
-
-window.closeJoin = function () {
-    if (joinModal) {
-        joinModal.classList.remove("show");
-    }
-};
-
-
-window.switchToJoin = function () {
-    closeLogin();
-    openJoin();
-};
-
-
-window.switchToLogin = function () {
-    closeJoin();
-    openLogin();
-};
-
-
-// ================================
-// CLOSE MODALS WHEN CLICK OUTSIDE
-// ================================
-
-[loginModal, joinModal, socialModal].forEach(modal => {
-
-    if (!modal) return;
-
-    modal.addEventListener("click", function (event) {
-
-        if (event.target === modal) {
-            modal.classList.remove("show");
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(7px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-    });
-
-});
-
-
-// ================================
-// ESC KEY
-// ================================
-
-document.addEventListener("keydown", function (event) {
-
-    if (event.key === "Escape") {
-        closeLogin();
-        closeJoin();
-        closeSocial();
-    }
-
-});
-
-
-// ================================
-// TOAST
-// ================================
-
-function showToast(message, type = "success") {
-
-    const toast = document.getElementById("toast");
-
-    if (!toast) return;
-
-    toast.textContent = message;
-
-    toast.className = "";
-
-    toast.classList.add("show");
-
-    if (type === "error") {
-        toast.classList.add("error");
-    }
-
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3500);
-}
-
-
-// ================================
-// LOGIN
-// ================================
-
-if (loginForm) {
-
-    loginForm.addEventListener("submit", async function (event) {
-
-        event.preventDefault();
-
-        const email =
-            document.getElementById("loginEmail").value.trim();
-
-        const password =
-            document.getElementById("loginPassword").value;
-
-        if (loginMessage) {
-            loginMessage.textContent = "جاري تسجيل الدخول...";
-            loginMessage.style.color = "#155dcc";
+        .modal.show {
+            display: flex;
         }
 
-        try {
-
-            const userCredential =
-                await signInWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-            const user = userCredential.user;
-
-            // Check whether user is admin
-            const adminRef = doc(db, "admins", user.uid);
-            const adminSnapshot = await getDoc(adminRef);
-
-            closeLogin();
-
-            if (adminSnapshot.exists()) {
-
-                window.location.href = "admin.html";
-
-            } else {
-
-                window.location.href = "member.html";
-
-            }
-
-        } catch (error) {
-
-            console.error(error);
-
-            let message =
-                "تعذر تسجيل الدخول. تأكد من البيانات.";
-
-            if (
-                error.code === "auth/invalid-credential" ||
-                error.code === "auth/wrong-password" ||
-                error.code === "auth/user-not-found"
-            ) {
-                message =
-                    "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
-            }
-
-            if (error.code === "auth/too-many-requests") {
-                message =
-                    "تمت محاولات كثيرة. حاول لاحقاً.";
-            }
-
-            if (loginMessage) {
-                loginMessage.textContent = message;
-                loginMessage.style.color = "#d92d20";
-            }
-
+        .modal-box {
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 22px;
+            padding: 28px;
+            position: relative;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
         }
 
-    });
-
-}
-
-
-// ================================
-// JOIN / REGISTER
-// ================================
-
-if (joinForm) {
-
-    joinForm.addEventListener("submit", async function (event) {
-
-        event.preventDefault();
-
-        const fullName =
-            document.getElementById("joinFullName").value.trim();
-
-        const phone =
-            document.getElementById("joinPhone").value.trim();
-
-        const birthDate =
-            document.getElementById("joinBirthDate").value;
-
-        const gender =
-            document.getElementById("joinGender").value;
-
-        const education =
-            document.getElementById("joinEducation").value;
-
-        const specialization =
-            document.getElementById("joinSpecialization").value.trim();
-
-        const job =
-            document.getElementById("joinJob").value.trim();
-
-        const email =
-            document.getElementById("joinEmail").value.trim();
-
-        const password =
-            document.getElementById("joinPassword").value;
-
-
-        if (joinMessage) {
-            joinMessage.textContent =
-                "جاري إنشاء الحساب...";
-            joinMessage.style.color = "#155dcc";
+        .modal-close {
+            position: absolute;
+            left: 18px;
+            top: 15px;
+            width: 36px;
+            height: 36px;
+            border: 0;
+            border-radius: 50%;
+            background: #eef7ff;
+            color: #031a43;
+            font-size: 22px;
+            cursor: pointer;
         }
 
-
-        try {
-
-            const userCredential =
-                await createUserWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-            const user = userCredential.user;
-
-
-            // Update Firebase Auth display name
-            await updateProfile(user, {
-                displayName: fullName
-            });
-
-
-            // Save member information
-            await setDoc(
-                doc(db, "members", user.uid),
-                {
-                    uid: user.uid,
-                    fullName: fullName,
-                    phone: phone,
-                    birthDate: birthDate,
-                    gender: gender,
-                    education: education,
-                    specialization: specialization,
-                    job: job,
-                    email: email,
-                    createdAt: serverTimestamp()
-                }
-            );
-
-
-            if (joinMessage) {
-                joinMessage.textContent =
-                    "تم إنشاء الحساب بنجاح.";
-                joinMessage.style.color = "#039855";
-            }
-
-
-            showToast(
-                "تم إنشاء حسابك بنجاح 🎉"
-            );
-
-
-            setTimeout(() => {
-
-                closeJoin();
-
-                window.location.href = "member.html";
-
-            }, 900);
-
-
-        } catch (error) {
-
-            console.error(error);
-
-            let message =
-                "حدث خطأ أثناء إنشاء الحساب.";
-
-            if (error.code === "auth/email-already-in-use") {
-                message =
-                    "هذا البريد الإلكتروني مستخدم مسبقاً.";
-            }
-
-            if (error.code === "auth/weak-password") {
-                message =
-                    "كلمة المرور يجب أن تكون 6 أحرف على الأقل.";
-            }
-
-            if (error.code === "auth/invalid-email") {
-                message =
-                    "البريد الإلكتروني غير صحيح.";
-            }
-
-
-            if (joinMessage) {
-                joinMessage.textContent = message;
-                joinMessage.style.color = "#d92d20";
-            }
-
+        .modal-box h2 {
+            color: #031a43;
+            margin-bottom: 8px;
         }
 
-    });
-
-}
-
-
-// ================================
-// LOAD NEWS
-// ================================
-
-async function loadNews() {
-
-    const latestContainer =
-        document.getElementById("latestContainer");
-
-    if (!latestContainer) return;
-
-
-    try {
-
-        const newsQuery = query(
-            collection(db, "news"),
-            orderBy("createdAt", "desc"),
-            limit(6)
-        );
-
-        const snapshot =
-            await getDocs(newsQuery);
-
-
-        if (snapshot.empty) {
-
-            latestContainer.innerHTML = `
-                <div class="empty-message">
-                    لا توجد أخبار منشورة حالياً.
-                </div>
-            `;
-
-            return;
+        .modal-box > p {
+            color: #667085;
+            margin-bottom: 22px;
         }
 
-
-        latestContainer.innerHTML = "";
-
-
-        snapshot.forEach(docSnapshot => {
-
-            const data = docSnapshot.data();
-
-            latestContainer.appendChild(
-                createPostCard(data, "news")
-            );
-
-        });
-
-
-    } catch (error) {
-
-        console.error("Error loading news:", error);
-
-        latestContainer.innerHTML = `
-            <div class="empty-message">
-                تعذر تحميل الأخبار حالياً.
-            </div>
-        `;
-
-    }
-
-}
-
-
-// ================================
-// LOAD CATEGORY POSTS
-// ================================
-
-async function loadCategoryPosts(
-    category,
-    elementId
-) {
-
-    const container =
-        document.querySelector(
-            `#${elementId} .category-posts`
-        );
-
-    if (!container) return;
-
-
-    try {
-
-        const postsQuery = query(
-            collection(db, "posts"),
-            where("category", "==", category),
-            orderBy("createdAt", "desc"),
-            limit(3)
-        );
-
-        const snapshot =
-            await getDocs(postsQuery);
-
-
-        if (snapshot.empty) {
-
-            container.innerHTML = `
-                <p class="empty-category">
-                    لا توجد منشورات حالياً.
-                </p>
-            `;
-
-            return;
+        .modal-form {
+            display: grid;
+            gap: 13px;
         }
 
-
-        container.innerHTML = "";
-
-
-        snapshot.forEach(docSnapshot => {
-
-            const data = docSnapshot.data();
-
-            container.appendChild(
-                createPostCard(data, "post")
-            );
-
-        });
-
-
-    } catch (error) {
-
-        console.error(
-            `Error loading ${category}:`,
-            error
-        );
-
-        container.innerHTML = `
-            <p class="empty-category">
-                تعذر تحميل المحتوى.
-            </p>
-        `;
-
-    }
-
-}
-
-
-// ================================
-// LOAD ACTIVITIES
-// ================================
-
-async function loadActivities() {
-
-    const container =
-        document.querySelector(
-            "#activities .category-posts"
-        );
-
-    if (!container) return;
-
-
-    try {
-
-        const activitiesQuery = query(
-            collection(db, "activities"),
-            orderBy("createdAt", "desc"),
-            limit(3)
-        );
-
-        const snapshot =
-            await getDocs(activitiesQuery);
-
-
-        if (snapshot.empty) {
-
-            container.innerHTML = `
-                <p class="empty-category">
-                    لا توجد فعاليات حالياً.
-                </p>
-            `;
-
-            return;
+        .modal-form input,
+        .modal-form select,
+        .modal-form textarea {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #d9e2ec;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            outline: none;
         }
 
+        .modal-form input:focus,
+        .modal-form select:focus,
+        .modal-form textarea:focus {
+            border-color: #155dcc;
+            box-shadow: 0 0 0 3px rgba(21, 93, 204, 0.1);
+        }
 
-        container.innerHTML = "";
+        .modal-submit {
+            border: 0;
+            padding: 14px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #155dcc, #8d5cff);
+            color: white;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
+        .modal-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
-        snapshot.forEach(docSnapshot => {
+        .modal-switch {
+            text-align: center;
+            margin-top: 15px;
+            color: #667085;
+        }
 
-            const data = docSnapshot.data();
+        .modal-switch button {
+            border: 0;
+            background: none;
+            color: #155dcc;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-            container.appendChild(
-                createPostCard(data, "activity")
-            );
+        .social-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
 
-        });
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            min-height: 52px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: bold;
+            color: white;
+            transition: 0.2s;
+        }
 
+        .social-link:hover {
+            transform: translateY(-2px);
+        }
 
-    } catch (error) {
+        .telegram {
+            background: #229ed9;
+        }
 
-        console.error(
-            "Error loading activities:",
-            error
-        );
+        .instagram {
+            background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+        }
 
-        container.innerHTML = `
-            <p class="empty-category">
-                تعذر تحميل الفعاليات.
-            </p>
-        `;
+        .facebook {
+            background: #1877f2;
+        }
 
-    }
+        .tiktok {
+            background: #111;
+        }
 
-}
+        .whatsapp {
+            background: #25d366;
+        }
 
+        .email-link {
+            background: #031a43;
+        }
 
-// ================================
-// CREATE CARD
-// ================================
+        .form-message {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 8px;
+            min-height: 20px;
+        }
 
-function createPostCard(data, type) {
-
-    const card =
-        document.createElement("article");
-
-    card.className = "post-card";
-
-
-    let imageHTML = "";
-
-    if (data.image) {
-
-        imageHTML = `
-            <div class="post-image">
-                <img
-                    src="${data.image}"
-                    alt="${escapeHTML(data.title || "منشور")}"
-                    loading="lazy"
-                >
-            </div>
-        `;
-
-    }
-
-
-    let dateText = "";
-
-    if (data.createdAt?.toDate) {
-
-        dateText =
-            data.createdAt
-                .toDate()
-                .toLocaleDateString("ar-IQ");
-
-    }
-
-
-    card.innerHTML = `
-
-        ${imageHTML}
-
-        <div class="post-card-content">
-
-            ${
-                dateText
-                    ? `<span class="post-date">${dateText}</span>`
-                    : ""
+        @media (max-width: 500px) {
+            .modal-box {
+                padding: 23px 17px;
             }
 
-            <h3>
-                ${escapeHTML(data.title || "بدون عنوان")}
-            </h3>
+            .social-links {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="site-header">
+    <div class="container header-inner">
+
+        <a href="#home" class="logo-area">
+            <img src="assets/team-logo.jpg" alt="شعار فريق شمال واسط">
+            <span>فريق شمال واسط</span>
+        </a>
+
+        <nav class="main-nav">
+            <a href="#home">الرئيسية</a>
+            <a href="#about">عن الفريق</a>
+            <a href="#categories">الأقسام</a>
+            <a href="#latest">آخر المستجدات</a>
+            <a href="#join">انضم إلينا</a>
+        </nav>
+
+        <button class="login-btn" onclick="openLogin()">
+            تسجيل الدخول
+        </button>
+
+    </div>
+</header>
+
+
+<main>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+
+        <div class="hero-overlay"></div>
+
+        <div class="container hero-content">
+
+            <span class="hero-small">
+                فريق شمال واسط
+            </span>
+
+            <h1>
+                فريق شمال واسط
+                <br>
+                <span>الثقافي التطوعي</span>
+            </h1>
 
             <p>
-                ${escapeHTML(
-                    data.content ||
-                    data.description ||
-                    "لا يوجد وصف."
-                )}
+                شباب يصنعون الأثر، ويخدمون المجتمع بالثقافة والتطوع والعمل الإنساني.
+            </p>
+
+            <button class="hero-btn" onclick="openJoin()">
+                انضم إلى فريقنا
+            </button>
+
+        </div>
+    </section>
+
+
+    <!-- QUICK LINKS -->
+    <section class="quick-links-section">
+        <div class="container">
+
+            <div class="section-heading">
+                <span>استكشف الفريق</span>
+                <h2>مجالاتنا وأنشطتنا</h2>
+            </div>
+
+            <div class="quick-links-grid">
+
+                <a href="#latest" class="quick-card">
+                    <div class="quick-icon">📰</div>
+                    <h3>الأخبار</h3>
+                    <p>آخر أخبار ومستجدات الفريق</p>
+                </a>
+
+                <a href="#health" class="quick-card">
+                    <div class="quick-icon">🩺</div>
+                    <h3>الصحة</h3>
+                    <p>محتوى صحي وتوعوي</p>
+                </a>
+
+                <a href="#environment" class="quick-card">
+                    <div class="quick-icon">🌱</div>
+                    <h3>البيئة</h3>
+                    <p>مبادرات للحفاظ على البيئة</p>
+                </a>
+
+                <a href="#articles" class="quick-card">
+                    <div class="quick-icon">📚</div>
+                    <h3>المقالات</h3>
+                    <p>مقالات ثقافية ومجتمعية</p>
+                </a>
+
+                <a href="#activities" class="quick-card">
+                    <div class="quick-icon">🎯</div>
+                    <h3>الفعاليات</h3>
+                    <p>فعالياتنا ومبادراتنا</p>
+                </a>
+
+                <a href="inquiries.html" class="quick-card">
+                    <div class="quick-icon">💬</div>
+                    <h3>الاستفسارات</h3>
+                    <p>أرسل استفسارك وتابع الرد</p>
+                </a>
+
+                <button class="quick-card quick-card-button" onclick="openSocial()">
+                    <div class="quick-icon">📱</div>
+                    <h3>تواصل معنا</h3>
+                    <p>تابعنا على منصات التواصل</p>
+                </button>
+
+                <a href="#about" class="quick-card">
+                    <div class="quick-icon">🤝</div>
+                    <h3>عن الفريق</h3>
+                    <p>تعرف أكثر على فريقنا</p>
+                </a>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- ABOUT -->
+    <section class="about-section" id="about">
+
+        <div class="container">
+
+            <div class="section-heading">
+                <span>من نحن</span>
+                <h2>فريق شمال واسط الثقافي التطوعي</h2>
+            </div>
+
+            <div class="about-content">
+
+                <div class="about-text">
+                    <p>
+                        فريق شمال واسط الثقافي التطوعي هو فريق شبابي يسعى إلى
+                        خدمة المجتمع من خلال المبادرات الثقافية والتطوعية
+                        والإنسانية، والمساهمة في نشر الوعي والمعرفة.
+                    </p>
+
+                    <p>
+                        نؤمن بأن العمل التطوعي والثقافي قادر على صناعة أثر
+                        حقيقي، وأن طاقات الشباب يمكن أن تكون قوة إيجابية
+                        لخدمة المجتمع وبناء مستقبل أفضل.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <img src="assets/team-logo.jpg" alt="شعار الفريق">
+
+                    <h3>معاً نصنع الأثر</h3>
+
+                    <p>
+                        ثقافة، تطوع، مبادرة، وخدمة للمجتمع.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+    <section class="categories-section" id="categories">
+
+        <div class="container">
+
+            <div class="section-heading">
+                <span>مجالات الفريق</span>
+                <h2>اختار القسم اللي يهمك</h2>
+            </div>
+
+            <div class="categories-grid">
+
+                <article class="category-card" id="health">
+                    <div class="category-icon">🩺</div>
+                    <h3>الصحة</h3>
+                    <p>
+                        محتوى ومبادرات صحية تهدف إلى نشر الوعي الصحي.
+                    </p>
+                    <div class="category-posts"></div>
+                </article>
+
+                <article class="category-card" id="environment">
+                    <div class="category-icon">🌱</div>
+                    <h3>البيئة</h3>
+                    <p>
+                        مبادرات ونشاطات تهتم بالبيئة والمحافظة عليها.
+                    </p>
+                    <div class="category-posts"></div>
+                </article>
+
+                <article class="category-card" id="articles">
+                    <div class="category-icon">📚</div>
+                    <h3>المقالات</h3>
+                    <p>
+                        مقالات ثقافية ومجتمعية من فريق شمال واسط.
+                    </p>
+                    <div class="category-posts"></div>
+                </article>
+
+                <article class="category-card" id="activities">
+                    <div class="category-icon">🎯</div>
+                    <h3>الفعاليات</h3>
+                    <p>
+                        تعرف على فعاليات ومبادرات الفريق القادمة والسابقة.
+                    </p>
+                    <div class="category-posts"></div>
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- LATEST -->
+    <section class="latest-section" id="latest">
+
+        <div class="container">
+
+            <div class="section-heading">
+                <span>آخر المستجدات</span>
+                <h2>أحدث أخبار الفريق</h2>
+            </div>
+
+            <div id="latestContainer" class="posts-grid">
+                <div class="loading-message">
+                    جاري تحميل آخر المستجدات...
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- JOIN -->
+    <section class="join-section" id="join">
+
+        <div class="container">
+
+            <div class="join-box">
+
+                <span>كن جزءاً من الأثر</span>
+
+                <h2>
+                    تريد تكون ويانا؟
+                </h2>
+
+                <p>
+                    انضم إلى فريق شمال واسط وساهم معنا في خدمة المجتمع.
+                </p>
+
+                <button onclick="openJoin()">
+                    انضم إلينا الآن
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+
+    <div class="container footer-content">
+
+        <div class="footer-brand">
+
+            <img src="assets/team-logo.jpg" alt="شعار الفريق">
+
+            <h3>فريق شمال واسط</h3>
+
+            <p>
+                فريق شمال واسط الثقافي التطوعي
             </p>
 
         </div>
 
-    `;
+
+        <div class="footer-links">
+
+            <h4>روابط</h4>
+
+            <a href="#home">الرئيسية</a>
+            <a href="#about">عن الفريق</a>
+            <a href="#categories">الأقسام</a>
+            <a href="inquiries.html">الاستفسارات</a>
+
+        </div>
 
 
-    return card;
+        <div class="footer-contact">
 
-}
+            <h4>تواصل معنا</h4>
 
+            <button class="footer-social-btn" onclick="openSocial()">
+                📱 منصات التواصل
+            </button>
 
-// ================================
-// ESCAPE HTML
-// ================================
+            <a href="mailto:ftf1m@gmail.com">
+                ✉️ ftf1m@gmail.com
+            </a>
 
-function escapeHTML(value) {
+        </div>
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
+    </div>
 
 
-// ================================
-// AUTH STATE
-// ================================
+    <div class="footer-bottom">
 
-onAuthStateChanged(auth, async user => {
+        <p>
+            © <span id="currentYear"></span> فريق شمال واسط الثقافي التطوعي
+        </p>
 
-    const loginButton =
-        document.querySelector(".login-btn");
+        <span>انضم إلينا</span>
 
-    if (!loginButton) return;
+    </div>
 
-
-    if (user) {
-
-        loginButton.textContent =
-            "حسابي";
-
-        loginButton.onclick = function () {
-
-            window.location.href =
-                "member.html";
-
-        };
-
-    } else {
-
-        loginButton.textContent =
-            "تسجيل الدخول";
-
-        loginButton.onclick =
-            window.openLogin;
-
-    }
-
-});
+</footer>
 
 
-// ================================
-// CURRENT YEAR
-// ================================
+<!-- SOCIAL MODAL -->
+<div class="modal" id="socialModal">
 
-const currentYear =
-    document.getElementById("currentYear");
+    <div class="modal-box">
 
-if (currentYear) {
+        <button class="modal-close" onclick="closeSocial()">
+            ×
+        </button>
 
-    currentYear.textContent =
-        new Date().getFullYear();
+        <h2>تواصل معنا</h2>
 
-}
+        <p>
+            تابع فريق شمال واسط على منصات التواصل
+        </p>
+
+        <div class="social-links">
+
+            <a
+                class="social-link telegram"
+                href="https://t.me/ftf_1m"
+                target="_blank"
+                rel="noopener"
+            >
+                ✈️ Telegram
+            </a>
+
+            <a
+                class="social-link instagram"
+                href="https://www.instagram.com/ftf_1m?stkn=Mjl5M3o5ZHNoODZn"
+                target="_blank"
+                rel="noopener"
+            >
+                📷 Instagram
+            </a>
+
+            <a
+                class="social-link facebook"
+                href="https://www.facebook.com/share/1BGrnt9amN/"
+                target="_blank"
+                rel="noopener"
+            >
+                👍 Facebook
+            </a>
+
+            <a
+                class="social-link tiktok"
+                href="https://www.tiktok.com/@ftf_1m?_r=1&_t=ZS-99i3iQv5gBO"
+                target="_blank"
+                rel="noopener"
+            >
+                🎵 TikTok
+            </a>
+
+            <a
+                class="social-link whatsapp"
+                href="https://wa.me/9647879996290"
+                target="_blank"
+                rel="noopener"
+            >
+                💬 WhatsApp
+            </a>
+
+            <a
+                class="social-link email-link"
+                href="mailto:ftf1m@gmail.com"
+            >
+                ✉️ Email
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
 
 
-// ================================
-// LOAD EVERYTHING
-// ================================
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginModal">
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
+    <div class="modal-box">
 
-        await loadNews();
+        <button class="modal-close" onclick="closeLogin()">
+            ×
+        </button>
 
-        await loadCategoryPosts(
-            "health",
-            "health"
-        );
+        <h2>تسجيل الدخول</h2>
 
-        await loadCategoryPosts(
-            "environment",
-            "environment"
-        );
+        <p>
+            سجل دخولك للوصول إلى حسابك.
+        </p>
 
-        await loadCategoryPosts(
-            "articles",
-            "articles"
-        );
+        <form id="loginForm" class="modal-form">
 
-        await loadActivities();
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="البريد الإلكتروني"
+                required
+            >
 
-    }
-);
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="كلمة المرور"
+                required
+            >
+
+            <button type="submit" class="modal-submit">
+                تسجيل الدخول
+            </button>
+
+            <div
+                id="loginMessage"
+                class="form-message"
+            ></div>
+
+        </form>
+
+        <div class="modal-switch">
+            ما عندك حساب؟
+            <button type="button" onclick="switchToJoin()">
+                انضم إلينا
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- JOIN MODAL -->
+<div class="modal" id="joinModal">
+
+    <div class="modal-box">
+
+        <button class="modal-close" onclick="closeJoin()">
+            ×
+        </button>
+
+        <h2>الانضمام إلى الفريق</h2>
+
+        <p>
+            سجل بياناتك حتى تنضم إلى فريق شمال واسط.
+        </p>
+
+        <form id="joinForm" class="modal-form">
+
+            <input
+                type="text"
+                id="joinFullName"
+                placeholder="الاسم الكامل"
+                required
+            >
+
+            <input
+                type="tel"
+                id="joinPhone"
+                placeholder="رقم الهاتف"
+                required
+            >
+
+            <input
+                type="date"
+                id="joinBirthDate"
+                required
+            >
+
+            <select id="joinGender" required>
+                <option value="">الجنس</option>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+            </select>
+
+            <select id="joinEducation" required>
+                <option value="">التحصيل الدراسي</option>
+                <option value="high-school">الثانوية</option>
+                <option value="diploma">دبلوم</option>
+                <option value="bachelor">بكالوريوس</option>
+                <option value="master">ماجستير</option>
+                <option value="phd">دكتوراه</option>
+            </select>
+
+            <input
+                type="text"
+                id="joinSpecialization"
+                placeholder="التخصص"
+                required
+            >
+
+            <input
+                type="text"
+                id="joinJob"
+                placeholder="العمل / الوظيفة"
+                required
+            >
+
+            <input
+                type="email"
+                id="joinEmail"
+                placeholder="البريد الإلكتروني"
+                required
+            >
+
+            <input
+                type="password"
+                id="joinPassword"
+                placeholder="كلمة المرور"
+                minlength="6"
+                required
+            >
+
+            <button type="submit" class="modal-submit">
+                إنشاء الحساب
+            </button>
+
+            <div
+                id="joinMessage"
+                class="form-message"
+            ></div>
+
+        </form>
+
+        <div class="modal-switch">
+            عندك حساب؟
+            <button type="button" onclick="switchToLogin()">
+                تسجيل الدخول
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="toast"></div>
+
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
