@@ -3,326 +3,507 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description"
-        content="فريق شمال واسط الثقافي التطوعي - فريق شبابي تطوعي لخدمة المجتمع وتنمية الشباب.">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="فريق شمال واسط الثقافي التطوعي - فريق شبابي تطوعي لخدمة المجتمع وتنمية الشباب."
+    >
 
     <title>فريق شمال واسط الثقافي التطوعي</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+        rel="stylesheet"
+    >
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- ================= HEADER ================= -->
+<header class="header">
 
-    <header class="header">
-        <div class="container nav-container">
+    <div class="container nav-container">
 
-            <a href="#home" class="logo">
-                <div class="logo-icon">
-                    <img src="assets/team-logo.jpg" alt="شعار فريق شمال واسط">
-                </div>
+        <a href="#home" class="logo">
 
-                <div class="logo-text">
-                    <strong>فريق شمال واسط</strong>
-                </div>
-            </a>
+            <img
+                src="assets/team-logo.jpg"
+                class="logo-image"
+                alt="شعار فريق شمال واسط"
+            >
+
+            <div class="logo-text">
+                <strong>فريق شمال واسط</strong>
+            </div>
+
+        </a>
+
+
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="فتح القائمة"
+        >
+            ☰
+        </button>
+
+
+        <nav class="nav" id="mainNav">
+
+            <a href="#home">الرئيسية</a>
+
+            <a href="#about">عن الفريق</a>
+
+            <a href="#categories">الأقسام</a>
+
+            <a href="#latest">آخر المستجدات</a>
+
+            <a href="#join">انضم إلينا</a>
 
             <button
-                class="menu-toggle"
-                id="menuToggle"
+                class="login-btn"
                 type="button"
-                aria-label="فتح القائمة">
-                ☰
+                onclick="openLogin()"
+            >
+                تسجيل الدخول
             </button>
 
-            <nav class="nav" id="mainNav">
+        </nav>
 
-                <a href="#home">الرئيسية</a>
-                <a href="#about">عن الفريق</a>
-                <a href="#activities">الفعاليات</a>
-                <a href="#news">الأخبار</a>
-                <a href="#gallery">المعرض</a>
-                <a href="#join">انضم إلينا</a>
+    </div>
+
+</header>
+
+
+<main>
+
+
+<section class="hero" id="home">
+
+    <div
+        class="hero-bg"
+        aria-hidden="true"
+    ></div>
+
+    <div
+        class="hero-soft-overlay"
+        aria-hidden="true"
+    ></div>
+
+
+    <div class="container hero-content">
+
+        <div class="hero-text">
+
+            <span class="hero-badge">
+                ✦ فريق شبابي تطوعي
+            </span>
+
+
+            <h1>
+                نصنع الأثر...
+                <br>
+                <span>ونبني المستقبل</span>
+            </h1>
+
+
+            <p>
+                فريق شمال واسط الثقافي التطوعي يجمع الشباب لصناعة المبادرات،
+                وتنمية المجتمع، ونشر الثقافة والعمل التطوعي.
+            </p>
+
+
+            <div class="hero-buttons">
 
                 <button
-                    class="login-btn"
+                    class="btn btn-primary"
                     type="button"
-                    onclick="openLogin()">
-                    تسجيل الدخول
+                    onclick="openJoin()"
+                >
+                    انضم إلينا
                 </button>
 
-            </nav>
+
+                <a
+                    href="#about"
+                    class="btn btn-outline"
+                >
+                    تعرف علينا
+                </a>
+
+            </div>
 
         </div>
-    </header>
 
 
-    <main>
+        <div class="hero-card">
 
-        <!-- ================= HERO ================= -->
-
-        <section class="hero" id="home">
-
-            <div class="container hero-content">
-
-                <div class="hero-text">
-
-                    <span class="hero-badge">
-                        ✦ فريق شبابي تطوعي
-                    </span>
-
-                    <h1>
-                        نصنع الأثر...
-                        <br>
-                        <span>ونبني المستقبل</span>
-                    </h1>
-
-                    <p>
-                        فريق شمال واسط الثقافي التطوعي يجمع الشباب
-                        لصناعة المبادرات، وتنمية المجتمع، ونشر الثقافة
-                        والعمل التطوعي.
-                    </p>
-
-                    <div class="hero-buttons">
-
-                        <button
-                            class="btn btn-primary"
-                            type="button"
-                            onclick="openJoin()">
-                            انضم إلينا
-                        </button>
-
-                        <a
-                            href="#about"
-                            class="btn btn-outline">
-                            تعرف علينا
-                        </a>
-
-                    </div>
-
-                </div>
-
-
-                <div class="hero-card">
-
-                    <div class="hero-card-icon">
-                        ✦
-                    </div>
-
-                    <h3>معًا نصنع الفرق</h3>
-
-                    <p>
-                        طاقات شبابية، أفكار جديدة،
-                        وأثر يبقى في المجتمع.
-                    </p>
-
-                    <div class="hero-card-line"></div>
-
-                    <span>
-                        شمال واسط
-                    </span>
-
-                </div>
-
+            <div class="hero-card-icon">
+                ✦
             </div>
 
-        </section>
+            <h3>
+                معًا نصنع الفرق
+            </h3>
 
+            <p>
+                طاقات شبابية، أفكار جديدة، وأثر يبقى في المجتمع.
+            </p>
 
-        <!-- ================= ABOUT ================= -->
+            <div class="hero-card-line"></div>
 
-        <section class="section" id="about">
+            <span>
+                شمال واسط
+            </span>
 
-            <div class="container">
+        </div>
 
-                <div class="section-heading">
+    </div>
 
-                    <span>من نحن</span>
+</section>
 
-                    <h2>
-                        معًا نحو مجتمع
-                        <span>أفضل</span>
-                    </h2>
-
-                    <p>
-                        نؤمن بأن الشباب هم أساس التغيير،
-                        ومن خلال العمل الجماعي نستطيع صناعة
-                        أثر حقيقي ومستدام.
-                    </p>
-
-                </div>
-
-
-                <div class="about-grid">
-
-                    <article class="about-card">
-
-                        <div class="card-icon">◈</div>
-
-                        <h3>رؤيتنا</h3>
-
-                        <p>
-                            بناء جيل شبابي واعٍ ومبدع،
-                            قادر على خدمة مجتمعه وصناعة
-                            مستقبل أفضل.
-                        </p>
-
-                    </article>
-
-
-                    <article class="about-card">
-
-                        <div class="card-icon">✦</div>
-
-                        <h3>رسالتنا</h3>
-
-                        <p>
-                            توفير بيئة شبابية تجمع بين
-                            الثقافة والتطوع والتطوير
-                            وصناعة المبادرات المجتمعية.
-                        </p>
-
-                    </article>
-
-
-                    <article class="about-card">
-
-                        <div class="card-icon">♢</div>
-
-                        <h3>قيمنا</h3>
-
-                        <p>
-                            التعاون، المسؤولية، الاحترام،
-                            الإبداع، وخدمة المجتمع.
-                        </p>
-
-                    </article>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= ACTIVITIES ================= -->
-
-        <section
-            class="section section-light"
-            id="activities">
-
-            <div class="container">
-
-                <div class="section-heading">
-
-                    <span>نشاطاتنا</span>
-
-                    <h2>
-                        آخر <span>الفعاليات</span>
-                    </h2>
-
-                    <p>
-                        تابع آخر النشاطات والفعاليات
-                        التي ينظمها فريق شمال واسط الثقافي التطوعي.
-                    </p>
-
-                </div>
-
-
-                <div
-                    id="activitiesContainer"
-                    class="cards-grid">
-
-                    <div class="loading-card">
-                        جاري تحميل الفعاليات...
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= NEWS ================= -->
-
-        <section class="section" id="news">
-
-            <div class="container">
-
-                <div class="section-heading">
-
-                    <span>آخر المستجدات</span>
-
-                    <h2>
-                        <span>أخبار</span> الفريق
-                    </h2>
-
-                    <p>
-                        تعرف على آخر أخبار ومبادرات
-                        فريق شمال واسط الثقافي التطوعي.
-                    </p>
-
-                </div>
-
-
-                <div
-                    id="newsContainer"
-                    class="cards-grid">
-
-                    <div class="loading-card">
-                        جاري تحميل الأخبار...
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-       
-        <!-- ================= GALLERY ================= -->
 
 <section
-    class="section section-light"
-    id="gallery">
+    class="section about-section"
+    id="about"
+>
 
     <div class="container">
 
         <div class="section-heading">
 
-            <span>ذكرياتنا</span>
+            <span>
+                من نحن
+            </span>
+
 
             <h2>
-                <span>معرض</span> الفريق
+                معًا نحو مجتمع
+                <span>أفضل</span>
+            </h2>
+
+
+            <p>
+                نؤمن بأن الشباب هم أساس التغيير، ومن خلال العمل الجماعي
+                نستطيع صناعة أثر حقيقي ومستدام.
+            </p>
+
+        </div>
+
+
+        <div class="about-grid">
+
+
+            <article class="about-card">
+
+                <div class="card-icon icon-blue">
+                    ◈
+                </div>
+
+
+                <h3>
+                    رؤيتنا
+                </h3>
+
+
+                <p>
+                    بناء جيل شبابي واعٍ ومبدع، قادر على خدمة مجتمعه
+                    وصناعة مستقبل أفضل.
+                </p>
+
+            </article>
+
+
+            <article class="about-card">
+
+                <div class="card-icon icon-purple">
+                    ✦
+                </div>
+
+
+                <h3>
+                    رسالتنا
+                </h3>
+
+
+                <p>
+                    توفير بيئة شبابية تجمع بين الثقافة والتطوع والتطوير
+                    وصناعة المبادرات المجتمعية.
+                </p>
+
+            </article>
+
+
+            <article class="about-card">
+
+                <div class="card-icon icon-green">
+                    ♢
+                </div>
+
+
+                <h3>
+                    قيمنا
+                </h3>
+
+
+                <p>
+                    التعاون، المسؤولية، الاحترام، الإبداع، وخدمة المجتمع.
+                </p>
+
+            </article>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    class="section section-light"
+    id="categories"
+>
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>
+                استكشف الموقع
+            </span>
+
+
+            <h2>
+                أقسام
+                <span>الفريق</span>
+            </h2>
+
+
+            <p>
+                اختاري القسم الذي تريدين الوصول إليه بسرعة.
+            </p>
+
+        </div>
+
+
+        <div class="quick-grid">
+
+
+            <a
+                class="quick-card"
+                href="#news"
+            >
+
+                <span class="quick-icon icon-news">
+                    📰
+                </span>
+
+                <strong>
+                    الأخبار
+                </strong>
+
+                <small>
+                    آخر أخبار الفريق
+                </small>
+
+            </a>
+
+
+            <a
+                class="quick-card"
+                href="#health"
+            >
+
+                <span class="quick-icon icon-health">
+                    ♥
+                </span>
+
+                <strong>
+                    الصحة
+                </strong>
+
+                <small>
+                    محتوى صحي وتوعوي
+                </small>
+
+            </a>
+
+
+            <a
+                class="quick-card"
+                href="#environment"
+            >
+
+                <span class="quick-icon icon-environment">
+                    ♧
+                </span>
+
+                <strong>
+                    البيئة
+                </strong>
+
+                <small>
+                    مبادرات بيئية
+                </small>
+
+            </a>
+
+
+            <a
+                class="quick-card"
+                href="#articles"
+            >
+
+                <span class="quick-icon icon-articles">
+                    ✎
+                </span>
+
+                <strong>
+                    المقالات
+                </strong>
+
+                <small>
+                    مقالات وأفكار
+                </small>
+
+            </a>
+
+
+            <a
+                class="quick-card"
+                href="#activities"
+            >
+
+                <span class="quick-icon icon-activities">
+                    ◆
+                </span>
+
+                <strong>
+                    الفعاليات
+                </strong>
+
+                <small>
+                    نشاطات الفريق
+                </small>
+
+            </a>
+
+
+            <a
+                class="quick-card"
+                href="inquiries.html"
+            >
+
+                <span class="quick-icon icon-inquiries">
+                    ?
+                </span>
+
+                <strong>
+                    الاستفسارات
+                </strong>
+
+                <small>
+                    أرسل استفسارك
+                </small>
+
+            </a>
+
+
+            <button
+                class="quick-card quick-card-button"
+                type="button"
+                onclick="openSocial()"
+            >
+
+                <span class="quick-icon icon-social">
+                    ◎
+                </span>
+
+                <strong>
+                    تواصل معنا
+                </strong>
+
+                <small>
+                    حساباتنا الرسمية
+                </small>
+
+            </button>
+
+
+            <a
+                class="quick-card"
+                href="#about"
+            >
+
+                <span class="quick-icon icon-about">
+                    ★
+                </span>
+
+                <strong>
+                    عن الفريق
+                </strong>
+
+                <small>
+                    تعرف علينا أكثر
+                </small>
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</section>
+<section
+    class="section"
+    id="latest"
+>
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <span>
+                آخر المستجدات
+            </span>
+
+            <h2>
+                أحدث ما نشره
+                <span>الفريق</span>
             </h2>
 
             <p>
-                لحظات من نشاطاتنا وفعالياتنا
-                المجتمعية والتطوعية.
+                تابع آخر المحتوى والمبادرات والفعاليات المنشورة من
+                فريق شمال واسط الثقافي التطوعي.
             </p>
 
         </div>
 
 
         <div
-            class="gallery-grid"
-            id="galleryGrid"
+            id="latestContainer"
+            class="posts-grid"
         >
 
-            <div class="gallery-loading">
-                جاري تحميل صور الفريق...
+            <div class="loading-card">
+                جاري تحميل آخر المستجدات...
             </div>
 
         </div>
@@ -332,701 +513,963 @@
 </section>
 
 
-        <!-- ================= JOIN CTA ================= -->
+<section
+    class="section section-light content-category"
+    id="news"
+>
 
-        <section
-            class="join-section"
-            id="join">
+    <div class="container">
 
-            <div class="container join-content">
+        <div class="category-title">
 
-                <div>
+            <span class="category-title-icon">
+                📰
+            </span>
 
-                    <span class="join-badge">
-                        كن جزءًا من التغيير
-                    </span>
+            <div>
 
-                    <h2>
-                        عندك طاقة وفكرة؟
-                        <br>
-                        <span>مكانك ويانا.</span>
-                    </h2>
+                <span>
+                    المستجدات
+                </span>
 
-                    <p>
-                        انضم إلى فريق شمال واسط الثقافي التطوعي
-                        وشاركنا صناعة الأثر.
-                    </p>
-
-                </div>
-
-                <button
-                    class="btn btn-white"
-                    type="button"
-                    onclick="openJoin()">
-                    انضم للفريق
-                </button>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- ================= FOOTER ================= -->
-
-    <footer class="footer">
-
-        <div class="container footer-content">
-
-            <div class="footer-brand">
-
-                <div class="logo footer-logo">
-
-                    <div class="logo-icon">ش</div>
-
-                    <div class="logo-text">
-                        <strong>شمال واسط</strong>
-                        <span>الثقافي التطوعي</span>
-                    </div>
-
-                </div>
-
-                <p>
-                    شباب يصنعون الأثر،
-                    ومجتمع نبنيه معًا.
-                </p>
-
-            </div>
-
-
-            <div class="footer-links">
-
-                <h4>روابط سريعة</h4>
-
-                <a href="#home">الرئيسية</a>
-                <a href="#about">عن الفريق</a>
-                <a href="#activities">الفعاليات</a>
-                <a href="#news">الأخبار</a>
-
-            </div>
-
-
-            <div class="footer-links">
-
-                <h4>تواصل معنا</h4>
-
-                <a href="#join">انضم إلينا</a>
-
-                <a href="mailto:info@example.com">
-                    البريد الإلكتروني
-                </a>
+                <h2>
+                    الأخبار
+                </h2>
 
             </div>
 
         </div>
 
 
-        <div class="footer-bottom">
+        <div
+            id="newsContainer"
+            class="posts-grid"
+        >
+
+            <div class="loading-card">
+                جاري تحميل الأخبار...
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    class="section content-category"
+    id="health"
+>
+
+    <div class="container">
+
+        <div class="category-title">
+
+            <span class="category-title-icon">
+                ♥
+            </span>
+
+            <div>
+
+                <span>
+                    التوعية
+                </span>
+
+                <h2>
+                    الصحة
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="healthContainer"
+            class="posts-grid"
+        >
+
+            <div class="loading-card">
+                جاري تحميل المحتوى الصحي...
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    class="section section-light content-category"
+    id="environment"
+>
+
+    <div class="container">
+
+        <div class="category-title">
+
+            <span class="category-title-icon">
+                ♧
+            </span>
+
+            <div>
+
+                <span>
+                    المبادرات
+                </span>
+
+                <h2>
+                    البيئة
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="environmentContainer"
+            class="posts-grid"
+        >
+
+            <div class="loading-card">
+                جاري تحميل المحتوى البيئي...
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    class="section content-category"
+    id="articles"
+>
+
+    <div class="container">
+
+        <div class="category-title">
+
+            <span class="category-title-icon">
+                ✎
+            </span>
+
+            <div>
+
+                <span>
+                    المعرفة
+                </span>
+
+                <h2>
+                    المقالات
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="articlesContainer"
+            class="posts-grid"
+        >
+
+            <div class="loading-card">
+                جاري تحميل المقالات...
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    class="section section-light content-category"
+    id="activities"
+>
+
+    <div class="container">
+
+        <div class="category-title">
+
+            <span class="category-title-icon">
+                ◆
+            </span>
+
+            <div>
+
+                <span>
+                    نشاطاتنا
+                </span>
+
+                <h2>
+                    الفعاليات
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="activitiesContainer"
+            class="posts-grid"
+        >
+
+            <div class="loading-card">
+                جاري تحميل الفعاليات...
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<section
+    class="join-section"
+    id="join"
+>
+
+    <div class="container join-content">
+
+        <div>
+
+            <span class="join-badge">
+                كن جزءًا من التغيير
+            </span>
+
+            <h2>
+                عندك طاقة وفكرة؟
+                <br>
+                <span>
+                    مكانك ويانا.
+                </span>
+            </h2>
 
             <p>
-                ©
-                <span id="currentYear"></span>
-                فريق شمال واسط الثقافي التطوعي.
-                جميع الحقوق محفوظة.
+                انضم إلى فريق شمال واسط الثقافي التطوعي وشاركنا صناعة الأثر.
             </p>
 
         </div>
 
-    </footer>
+
+        <button
+            class="btn btn-white"
+            type="button"
+            onclick="openJoin()"
+        >
+            انضم للفريق
+        </button>
+
+    </div>
+
+</section>
 
 
-    <!-- ==================================================
-         LOGIN MODAL
-    =================================================== -->
-
-    <div
-        class="modal"
-        id="loginModal"
-        aria-hidden="true">
-
-        <div
-            class="modal-overlay"
-            onclick="closeLogin()">
-        </div>
+</main>
 
 
-        <div
-            class="modal-box login-modal-box"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="loginTitle">
+<footer class="footer">
 
-            <button
-                class="modal-close"
-                type="button"
-                onclick="closeLogin()"
-                aria-label="إغلاق">
-                ×
-            </button>
+    <div class="container footer-content">
 
 
-            <div class="modal-header">
+        <div class="footer-brand">
 
-                <div class="modal-icon">
-                    🔐
+
+            <div class="logo footer-logo">
+
+                <img
+                    src="assets/team-logo.jpg"
+                    class="logo-image"
+                    alt="شعار فريق شمال واسط"
+                >
+
+
+                <div class="logo-text">
+
+                    <strong>
+                        فريق شمال واسط
+                    </strong>
+
+                    <span>
+                        الثقافي التطوعي
+                    </span>
+
                 </div>
-
-                <span class="modal-small-title">
-                    أهلاً بعودتك
-                </span>
-
-                <h2 id="loginTitle">
-                    مرحبًا بك من جديد 👋
-                </h2>
-
-                <p>
-                    سجّل دخولك للوصول إلى حسابك
-                    في فريق شمال واسط.
-                </p>
 
             </div>
 
 
-            <form id="loginForm">
+            <p>
+                شباب يصنعون الأثر، ومجتمع نبنيه معًا.
+            </p>
 
-                <div class="form-group">
-
-                    <label for="loginEmail">
-                        البريد الإلكتروني
-                    </label>
-
-                    <input
-                        type="email"
-                        id="loginEmail"
-                        placeholder="example@email.com"
-                        autocomplete="email"
-                        required>
-
-                </div>
+        </div>
 
 
-                <div class="form-group">
 
-                    <label for="loginPassword">
-                        كلمة المرور
-                    </label>
+        <div class="footer-links">
 
-                    <input
-                        type="password"
-                        id="loginPassword"
-                        placeholder="أدخل كلمة المرور"
-                        autocomplete="current-password"
-                        required>
-
-                </div>
+            <h4>
+                تواصل معنا
+            </h4>
 
 
-                <button
-                    type="submit"
-                    class="btn btn-primary btn-full">
-                    تسجيل الدخول
-                </button>
+            <button
+                type="button"
+                class="footer-social-button"
+                onclick="openSocial()"
+            >
+                ◎ حسابات التواصل
+            </button>
 
 
-                <div class="modal-divider">
-                    <span>أو</span>
-                </div>
+            <a href="mailto:ftf1m1@gmail.com">
+                ✉ البريد الإلكتروني
+            </a>
 
 
-                <p class="form-switch">
-                    ما عندك حساب؟
-                    <button
-                        type="button"
-                        onclick="switchToJoin()">
-                        انضم للفريق
-                    </button>
-                </p>
-
-            </form>
+            <span>
+                انضم إلينا
+            </span>
 
         </div>
 
     </div>
 
 
-    <!-- ==================================================
-         JOIN MODAL
-    =================================================== -->
+
+    <div class="footer-bottom">
+
+        ©
+
+        <span id="currentYear"></span>
+
+        فريق شمال واسط الثقافي التطوعي.
+
+        جميع الحقوق محفوظة.
+
+    </div>
+
+</footer>
+
+
+<div
+    class="modal"
+    id="socialModal"
+    aria-hidden="true"
+>
 
     <div
-        class="modal"
-        id="joinModal"
-        aria-hidden="true">
+        class="modal-overlay"
+        onclick="closeSocial()"
+    ></div>
 
-        <div
-            class="modal-overlay"
-            onclick="closeJoin()">
+
+    <div
+        class="modal-box social-modal-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="socialTitle"
+    >
+
+        <button
+            class="modal-close"
+            type="button"
+            onclick="closeSocial()"
+            aria-label="إغلاق"
+        >
+            ×
+        </button>
+
+
+        <div class="modal-header">
+
+            <div class="modal-icon">
+                ◎
+            </div>
+
+
+            <span class="modal-small-title">
+                تواصل معنا
+            </span>
+
+
+            <h2 id="socialTitle">
+                حسابات فريق شمال واسط
+            </h2>
+
+
+            <p>
+                تابعونا عبر منصات التواصل الرسمية.
+            </p>
+
         </div>
 
 
-        <div
-            class="modal-box modal-large"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="joinTitle">
-
-            <button
-                class="modal-close"
-                type="button"
-                onclick="closeJoin()"
-                aria-label="إغلاق">
-                ×
-            </button>
+        <div class="social-grid">
 
 
-            <div class="modal-header">
+            <a
+                class="social-item telegram"
+                href="https://t.me/ftf_1m"
+                target="_blank"
+                rel="noopener"
+            >
 
-                <div class="modal-icon">
-                    ✦
-                </div>
+                <b>
+                    ➤
+                </b>
 
-                <span class="modal-small-title">
-                    انضم إلى مجتمعنا
+                <span>
+                    Telegram
                 </span>
 
-                <h2 id="joinTitle">
-                    خلّيك جزء من الفريق 🤝
-                </h2>
+            </a>
 
-                <p>
-                    عبّي معلوماتك وأنشئ حسابك
-                    للانضمام إلى فريق شمال واسط.
-                </p>
+
+            <a
+                class="social-item instagram"
+                href="https://www.instagram.com/ftf_1m?stkn=Mjl5M3o5ZHNoODZn"
+                target="_blank"
+                rel="noopener"
+            >
+
+                <b>
+                    ◎
+                </b>
+
+                <span>
+                    Instagram
+                </span>
+
+            </a>
+
+
+            <a
+                class="social-item facebook"
+                href="https://www.facebook.com/share/1BGrnt9amN/"
+                target="_blank"
+                rel="noopener"
+            >
+
+                <b>
+                    f
+                </b>
+
+                <span>
+                    Facebook
+                </span>
+
+            </a>
+
+
+            <a
+                class="social-item tiktok"
+                href="https://www.tiktok.com/@ftf_1m?_r=1&_t=ZS-99i3iQv5gBO"
+                target="_blank"
+                rel="noopener"
+            >
+
+                <b>
+                    ♪
+                </b>
+
+                <span>
+                    TikTok
+                </span>
+
+            </a>
+
+
+            <a
+                class="social-item whatsapp"
+                href="https://wa.me/9647879996290"
+                target="_blank"
+                rel="noopener"
+            >
+
+                <b>
+                    ◔
+                </b>
+
+                <span>
+                    WhatsApp
+                </span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+<div
+    class="modal"
+    id="loginModal"
+    aria-hidden="true"
+>
+
+    <div
+        class="modal-overlay"
+        onclick="closeLogin()"
+    ></div>
+
+
+    <div
+        class="modal-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="loginTitle"
+    >
+
+        <button
+            class="modal-close"
+            type="button"
+            onclick="closeLogin()"
+            aria-label="إغلاق"
+        >
+            ×
+        </button>
+
+
+        <div class="modal-header">
+
+            <div class="modal-icon">
+                🔐
+            </div>
+
+
+            <span class="modal-small-title">
+                أهلاً بعودتك
+            </span>
+
+
+            <h2 id="loginTitle">
+                مرحبًا بك من جديد 👋
+            </h2>
+
+
+            <p>
+                سجّل دخولك للوصول إلى حسابك في فريق شمال واسط.
+            </p>
+
+        </div>
+
+
+        <form id="loginForm">
+
+            <div class="form-group">
+
+                <label for="loginEmail">
+                    البريد الإلكتروني
+                </label>
+
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="example@email.com"
+                    autocomplete="email"
+                    required
+                >
 
             </div>
 
 
-            <form id="joinForm">
+            <div class="form-group">
+
+                <label for="loginPassword">
+                    كلمة المرور
+                </label>
 
 
-                <!-- الاسم والهاتف -->
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="أدخل كلمة المرور"
+                    autocomplete="current-password"
+                    required
+                >
 
-                <div class="form-row">
-
-                    <div class="form-group">
-
-                        <label for="fullName">
-                            الاسم الكامل *
-                        </label>
-
-                        <input
-                            type="text"
-                            id="fullName"
-                            placeholder="اكتب اسمك الكامل"
-                            autocomplete="name"
-                            required>
-
-                    </div>
+            </div>
 
 
-                    <div class="form-group">
-
-                        <label for="phone">
-                            رقم الهاتف *
-                        </label>
-
-                        <input
-                            type="tel"
-                            id="phone"
-                            placeholder="07XXXXXXXXX"
-                            autocomplete="tel"
-                            required>
-
-                    </div>
-
-                </div>
+            <button
+                type="submit"
+                class="btn btn-primary btn-full"
+            >
+                تسجيل الدخول
+            </button>
 
 
-                <!-- الميلاد والجنس -->
+            <p class="form-switch">
 
-                <div class="form-row">
+                ما عندك حساب؟
 
-                    <div class="form-group">
+                <button
+                    type="button"
+                    onclick="switchToJoin()"
+                >
+                    انضم للفريق
+                </button>
 
-                        <label for="birthDate">
-                            تاريخ الميلاد *
-                        </label>
+            </p>
 
-                        <input
-                            type="date"
-                            id="birthDate"
-                            required>
+        </form>
 
-                    </div>
+    </div>
 
-
-                    <div class="form-group">
-
-                        <label for="gender">
-                            الجنس *
-                        </label>
-
-                        <select
-                            id="gender"
-                            required>
-
-                            <option value="">
-                                اختر الجنس
-                            </option>
-
-                            <option value="male">
-                                ذكر
-                            </option>
-
-                            <option value="female">
-                                أنثى
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
+</div>
 
 
-                <!-- التحصيل والتخصص -->
+<div
+    class="modal"
+    id="joinModal"
+    aria-hidden="true"
+>
 
-                <div class="form-row">
-
-                    <div class="form-group">
-
-                        <label for="education">
-                            التحصيل الدراسي *
-                        </label>
-
-                        <select
-                            id="education"
-                            required>
-
-                            <option value="">
-                                اختر التحصيل
-                            </option>
-
-                            <option value="primary">
-                                ابتدائية
-                            </option>
-
-                            <option value="middle">
-                                متوسطة
-                            </option>
-
-                            <option value="secondary">
-                                إعدادية
-                            </option>
-
-                            <option value="diploma">
-                                دبلوم
-                            </option>
-
-                            <option value="bachelor">
-                                بكالوريوس
-                            </option>
-
-                            <option value="master">
-                                ماجستير
-                            </option>
-
-                            <option value="phd">
-                                دكتوراه
-                            </option>
-
-                            <option value="other">
-                                أخرى
-                            </option>
-
-                        </select>
-
-                    </div>
+    <div
+        class="modal-overlay"
+        onclick="closeJoin()"
+    ></div>
 
 
-                    <div class="form-group">
+    <div
+        class="modal-box modal-large"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="joinTitle"
+    >
 
-                        <label for="specialization">
-                            التخصص
-                        </label>
-
-                        <input
-                            type="text"
-                            id="specialization"
-                            placeholder="مثال: هندسة، طب، قانون...">
-                            </div>
-
-                </div>
+        <button
+            class="modal-close"
+            type="button"
+            onclick="closeJoin()"
+            aria-label="إغلاق"
+        >
+            ×
+        </button>
 
 
-                <!-- العمل -->
+        <div class="modal-header">
+
+            <div class="modal-icon">
+                ✦
+            </div>
+
+
+            <span class="modal-small-title">
+                انضم إلى مجتمعنا
+            </span>
+
+
+            <h2 id="joinTitle">
+                خلّيك جزء من الفريق 🤝
+            </h2>
+
+
+            <p>
+                عبّي معلوماتك وأنشئ حسابك للانضمام إلى فريق شمال واسط.
+            </p>
+
+        </div>
+
+
+        <form id="joinForm">
+
+
+            <div class="form-row">
 
                 <div class="form-group">
 
-                    <label for="job">
-                        المهنة / العمل
+                    <label for="fullName">
+                        الاسم الكامل *
                     </label>
+
 
                     <input
                         type="text"
-                        id="job"
-                        placeholder="اكتب مهنتك">
+                        id="fullName"
+                        placeholder="اكتب اسمك الكامل"
+                        autocomplete="name"
+                        required
+                    >
 
                 </div>
 
-
-                <!-- البريد -->
 
                 <div class="form-group">
 
-                    <label for="email">
-                        البريد الإلكتروني *
+                    <label for="phone">
+                        رقم الهاتف *
                     </label>
 
+
                     <input
-                        type="email"
-                        id="email"
-                        placeholder="example@email.com"
-                        autocomplete="email"
-                        required>
+                        type="tel"
+                        id="phone"
+                        placeholder="07XXXXXXXXX"
+                        autocomplete="tel"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="birthDate">
+                        تاريخ الميلاد *
+                    </label>
+
+
+                    <input
+                        type="date"
+                        id="birthDate"
+                        required
+                    >
 
                 </div>
 
 
-                <!-- كلمات المرور -->
+                <div class="form-group">
 
-                <div class="form-row">
-
-                    <div class="form-group">
-
-                        <label for="password">
-                            كلمة المرور *
-                        </label>
-
-                        <input
-                            type="password"
-                            id="password"
-                            placeholder="6 أحرف على الأقل"
-                            autocomplete="new-password"
-                            minlength="6"
-                            required>
-
-                    </div>
+                    <label for="gender">
+                        الجنس *
+                    </label>
 
 
-                    <div class="form-group">
+                    <select
+                        id="gender"
+                        required
+                    >
 
-                        <label for="confirmPassword">
-                            تأكيد كلمة المرور *
-                        </label>
+                        <option value="">
+                            اختر الجنس
+                        </option>
 
-                        <input
+                        <option value="male">
+                            ذكر
+                        </option>
+
+                        <option value="female">
+                            أنثى
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="education">
+                        التحصيل الدراسي *
+                    </label>
+
+
+                    <select
+                        id="education"
+                        required
+                    >
+
+                        <option value="">
+                            اختر التحصيل
+                        </option>
+
+                        <option value="primary">
+                            ابتدائية
+                        </option>
+
+                        <option value="middle">
+                            متوسطة
+                        </option>
+
+                        <option value="secondary">
+                            إعدادية
+                        </option>
+
+                        <option value="diploma">
+                            دبلوم
+                        </option>
+
+                        <option value="bachelor">
+                            بكالوريوس
+                        </option>
+
+                        <option value="master">
+                            ماجستير
+                        </option>
+
+                        <option value="phd">
+                            دكتوراه
+                        </option>
+
+                        <option value="other">
+                            أخرى
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="specialization">
+                        التخصص
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="specialization"
+                        placeholder="مثال: هندسة، طب، قانون..."
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="job">
+                    المهنة / العمل
+                </label>
+
+
+                <input
+                    type="text"
+                    id="job"
+                    placeholder="اكتب مهنتك"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    البريد الإلكتروني *
+                </label>
+
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="example@email.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="password">
+                        كلمة المرور *
+                    </label>
+
+
+                    <input
                         type="password"
-                            id="confirmPassword"
-                            placeholder="أعد كتابة كلمة المرور"
-                            autocomplete="new-password"
-                            minlength="6"
-                            required>
-
-                    </div>
+                        id="password"
+                        placeholder="6 أحرف على الأقل"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required
+                    >
 
                 </div>
 
 
-                <div class="join-note">
-                    🔒 بياناتك تستخدم لإنشاء حسابك
-                    وإدارة عضويتك في الفريق.
+                <div class="form-group">
+
+                    <label for="confirmPassword">
+                        تأكيد كلمة المرور *
+                    </label>
+
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="أعد كتابة كلمة المرور"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required
+                    >
+
                 </div>
 
-
-                <button
-                    type="submit"
-                    class="btn btn-primary btn-full">
-                    إنشاء الحساب والانضمام للفريق
-                </button>
+            </div>
 
 
-                <p class="form-switch">
-                    عندك حساب مسبقًا؟
-                    <button
-                        type="button"
-                        onclick="switchToLogin()">
-                        تسجيل الدخول
-                    </button>
-                </p>
+            <div class="join-note">
+                🔒 بياناتك تستخدم لإنشاء حسابك وإدارة عضويتك في الفريق.
+            </div>
 
-            </form>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ==================================================
-         SOCIAL MEDIA MODAL
-    =================================================== -->
-
-    <div
-        class="modal"
-        id="socialModal"
-        aria-hidden="true">
-
-        <div
-            class="modal-overlay"
-            id="socialModalOverlay">
-        </div>
-
-        <div
-            class="modal-box social-modal-box"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="socialTitle">
 
             <button
-                class="modal-close"
-                id="socialModalClose"
-                type="button"
-                aria-label="إغلاق">
-
-                ×
-
+                type="submit"
+                class="btn btn-primary btn-full"
+            >
+                إنشاء الحساب والانضمام للفريق
             </button>
 
-            <div class="modal-header">
 
-                <div class="modal-icon">
-                    🔗
-                </div>
+            <p class="form-switch">
 
-                <span class="modal-small-title">
-                    تواصل معنا
-                </span>
+                عندك حساب مسبقًا؟
 
-                <h2 id="socialTitle">
-                    منصات التواصل
-                </h2>
+                <button
+                    type="button"
+                    onclick="switchToLogin()"
+                >
+                    تسجيل الدخول
+                </button>
 
-                <p>
-                    تابع أخبار ومبادرات فريق شمال واسط عبر منصاتنا.
-                </p>
+            </p>
 
-            </div>
-
-            <div class="social-modal-grid">
-
-                <a
-                    class="social-modal-link telegram"
-                    href="https://t.me/ftf_1m"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                    <span class="social-modal-icon">✈</span>
-
-                    <span>
-                        <strong>Telegram</strong>
-                        <small>قناة الفريق</small>
-                    </span>
-
-                    <b>↗</b>
-
-                </a>
-
-                <a
-                    class="social-modal-link instagram"
-                    href="https://www.instagram.com/ftf_1m?stkn=Mjl5M3o5ZHNoODZn"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                    <span class="social-modal-icon">◎</span>
-
-                    <span>
-                        <strong>Instagram</strong>
-                        <small>حساب الفريق</small>
-                    </span>
-
-                    <b>↗</b>
-
-                </a>
-
-                <a
-                    class="social-modal-link facebook"
-                    href="https://www.facebook.com/share/1BGrnt9amN/"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                    <span class="social-modal-icon">f</span>
-
-                    <span>
-                        <strong>Facebook</strong>
-                        <small>صفحة الفريق</small>
-                    </span>
-
-                    <b>↗</b>
-
-                </a>
-
-                <a
-                    class="social-modal-link tiktok"
-                    href="https://www.tiktok.com/@ftf_1m?_r=1&_t=ZS-99i3iQv5gBO"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                    <span class="social-modal-icon">♪</span>
-
-                    <span>
-                        <strong>TikTok</strong>
-                        <small>حساب الفريق</small>
-                    </span>
-
-                    <b>↗</b>
-
-                </a>
-
-                <a
-                    class="social-modal-link whatsapp"
-                    href="https://wa.me/9647879996290"
-                    target="_blank"
-                    rel="noopener noreferrer">
-
-                    <span class="social-modal-icon">◔</span>
-
-                    <span>
-                        <strong>WhatsApp</strong>
-                        <small>تواصل مباشر</small>
-                    </span>
-
-                    <b>↗</b>
-
-                </a>
-
-            </div>
-
-        </div>
+        </form>
 
     </div>
-    <!-- ================= TOAST ================= -->
 
-    <div
-        id="toast"
-        class="toast"
-        role="status"
-        aria-live="polite">
-    </div>
+</div>
 
 
-    <!-- ================= JAVASCRIPT ================= -->
+<div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+></div>
 
-    <script
-        type="module"
-        src="script.js">
-    </script>
+
+<script
+    type="module"
+    src="script.js"
+></script>
+
 
 </body>
 </html>
