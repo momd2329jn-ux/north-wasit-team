@@ -1,228 +1,756 @@
 import {
-    auth, db,
+    auth,
+    db,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+    onAuthStateChanged,
     updateProfile,
-    doc, setDoc, collection, addDoc, getDocs,
-    query, orderBy, limit, serverTimestamp
+    doc,
+    setDoc,
+    getDoc,
+    collection,
+    getDocs,
+    query,
+    orderBy,
+    limit,
+    serverTimestamp,
+    where
 } from "./firebase.js";
 
+
+// ================================
+// ELEMENTS
+// ================================
+
+const socialModal = document.getElementById("socialModal");
 const loginModal = document.getElementById("loginModal");
 const joinModal = document.getElementById("joinModal");
-const socialModal = document.getElementById("socialModal");
-const mainNav = document.getElementById("mainNav");
-const menuToggle = document.getElementById("menuToggle");
 
-function setModal(modal, open) {
-    if (!modal) return;
-    modal.classList.toggle("active", open);
-    modal.setAttribute("aria-hidden", open ? "false" : "true");
-    document.body.classList.toggle("modal-open", open);
-}
-function toggleMenu(){ mainNav?.classList.toggle("active"); }
-function openLogin(){ closeJoin(); closeSocial(); setModal(loginModal,true); }
-function closeLogin(){ setModal(loginModal,false); }
-function openJoin(){ closeLogin(); closeSocial(); setModal(joinModal,true); }
-function closeJoin(){ setModal(joinModal,false); }
-function openSocial(){ closeLogin(); closeJoin(); setModal(socialModal,true); }
-function closeSocial(){ setModal(socialModal,false); }
-function switchToJoin(){ closeLogin(); openJoin(); }
-function switchToLogin(){ closeJoin(); openLogin(); }
-function showToast(message){
-    const toast=document.getElementById("toast");
-    if(!toast)return;
-    toast.textContent=message;
-    toast.classList.add("show");
-    setTimeout(()=>toast.classList.remove("show"),3500);
-}
-window.toggleMenu=toggleMenu;
-window.openLogin=openLogin; window.closeLogin=closeLogin;
-window.openJoin=openJoin; window.closeJoin=closeJoin;
-window.openSocial=openSocial; window.closeSocial=closeSocial;
-window.switchToJoin=switchToJoin; window.switchToLogin=switchToLogin;
-window.showToast=showToast;
+const loginForm = document.getElementById("loginForm");
+const joinForm = document.getElementById("joinForm");
 
-const year=document.getElementById("currentYear");
-if(year) year.textContent=new Date().getFullYear();
+const loginMessage = document.getElementById("loginMessage");
+const joinMessage = document.getElementById("joinMessage");
 
-function escapeHTML(value){
-    return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;")
-        .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
 
-function formatDate(value){
-    if(!value) return "";
-    try{
-        const d=value.toDate ? value.toDate() : new Date(value);
-        if(Number.isNaN(d.getTime())) return "";
-        return d.toLocaleDateString("ar-IQ",{year:"numeric",month:"long",day:"numeric"});
-    }catch{return "";}
-}
+// ================================
+// GLOBAL MODAL FUNCTIONS
+// ================================
 
-const categoryInfo={
-    news:{label:"الأخبار",icon:"📰",color:"news"},
-    health:{label:"الصحة",icon:"♥",color:"health"},
-    environment:{label:"البيئة",icon:"♧",color:"environment"},
-    articles:{label:"المقالات",icon:"✎",color:"articles"},
-    activities:{label:"الفعاليات",icon:"◆",color:"activities"}
+window.openSocial = function () {
+    if (socialModal) {
+        socialModal.classList.add("show");
+    }
 };
 
-function createPostCard(data, fallbackCategory="news"){
-    const category=data.category || fallbackCategory;
-    const info=categoryInfo[category] || categoryInfo.news;
-    const card=document.createElement("article");
-    card.className="post-card";
-    if(data.image){
-        const img=document.createElement("img");
-        img.className="post-image";
-        img.loading="lazy";
-        img.src=data.image;
-        img.alt=data.title || info.label;
-        img.onerror=()=>img.remove();
-        card.appendChild(img);
+window.closeSocial = function () {
+    if (socialModal) {
+        socialModal.classList.remove("show");
     }
-    const body=document.createElement("div");
-    body.className="post-body";
-    body.innerHTML=`
-        <div class="post-meta">${escapeHTML(info.icon)} ${escapeHTML(info.label)}${formatDate(data.createdAt) ? " • "+escapeHTML(formatDate(data.createdAt)) : ""}</div>
-        <h3>${escapeHTML(data.title || "منشور من الفريق")}</h3>
-        <p>${escapeHTML(data.content || "")}</p>`;
-    card.appendChild(body);
-    return card;
-}
+};
 
-function renderPosts(container, posts, emptyText){
-    if(!container)return;
-    container.innerHTML="";
-    if(!posts.length){
-        container.innerHTML=`<div class="empty-card">${escapeHTML(emptyText)}</div>`;
-        return;
+
+window.openLogin = function () {
+    closeJoin();
+
+    if (loginModal) {
+        loginModal.classList.add("show");
     }
-    posts.forEach(post=>container.appendChild(createPostCard(post)));
-}
+};
 
-async function getCollectionDocs(name, max=30){
-    try{
-        const q=query(collection(db,name),orderBy("createdAt","desc"),limit(max));
-        const snap=await getDocs(q);
-        return snap.docs.map(d=>({id:d.id,...d.data()}));
-    }catch(error){
-        console.error(`خطأ في ${name}:`,error);
-        return [];
+
+window.closeLogin = function () {
+    if (loginModal) {
+        loginModal.classList.remove("show");
     }
-}
+};
 
-async function loadAllPosts(){
-    const posts=await getCollectionDocs("posts",40);
-    const legacyNews=await getCollectionDocs("news",12);
-    const legacyActivities=await getCollectionDocs("activities",12);
 
-    const normalized=[
-        ...posts,
-        ...legacyNews.map(x=>({...x,category:"news"})),
-        ...legacyActivities.map(x=>({...x,category:"activities"}))
-    ];
-    normalized.sort((a,b)=>{
-        const ta=a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt||0).getTime();
-        const tb=b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt||0).getTime();
-        return tb-ta;
+window.openJoin = function () {
+    closeLogin();
+
+    if (joinModal) {
+        joinModal.classList.add("show");
+    }
+};
+
+
+window.closeJoin = function () {
+    if (joinModal) {
+        joinModal.classList.remove("show");
+    }
+};
+
+
+window.switchToJoin = function () {
+    closeLogin();
+    openJoin();
+};
+
+
+window.switchToLogin = function () {
+    closeJoin();
+    openLogin();
+};
+
+
+// ================================
+// CLOSE MODALS WHEN CLICK OUTSIDE
+// ================================
+
+[loginModal, joinModal, socialModal].forEach(modal => {
+
+    if (!modal) return;
+
+    modal.addEventListener("click", function (event) {
+
+        if (event.target === modal) {
+            modal.classList.remove("show");
+        }
+
     });
 
-    const latest=document.getElementById("latestContainer");
-    if(latest){
-        latest.innerHTML="";
-        const latestPosts=normalized.slice(0,6);
-        if(!latestPosts.length) latest.innerHTML='<div class="empty-card">لا توجد مستجدات منشورة حاليًا.</div>';
-        else latestPosts.forEach(p=>latest.appendChild(createPostCard(p)));
+});
+
+
+// ================================
+// ESC KEY
+// ================================
+
+document.addEventListener("keydown", function (event) {
+
+    if (event.key === "Escape") {
+        closeLogin();
+        closeJoin();
+        closeSocial();
     }
 
-    for(const category of Object.keys(categoryInfo)){
-        const container=document.getElementById(category==="news"?"newsContainer":`${category}Container`);
-        const items=normalized.filter(p=>(p.category||"news")===category).slice(0,9);
-        renderPosts(container,items,`لا يوجد محتوى في قسم ${categoryInfo[category].label} حاليًا.`);
+});
+
+
+// ================================
+// TOAST
+// ================================
+
+function showToast(message, type = "success") {
+
+    const toast = document.getElementById("toast");
+
+    if (!toast) return;
+
+    toast.textContent = message;
+
+    toast.className = "";
+
+    toast.classList.add("show");
+
+    if (type === "error") {
+        toast.classList.add("error");
     }
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3500);
 }
 
-loadAllPosts();
 
-if(menuToggle){
-    menuToggle.addEventListener("click",toggleMenu);
-}
-document.querySelectorAll(".nav a").forEach(link=>{
-    link.addEventListener("click",()=>mainNav?.classList.remove("active"));
-});
-window.addEventListener("keydown",event=>{
-    if(event.key==="Escape"){
-        closeLogin(); closeJoin(); closeSocial();
-    }
-});
-window.addEventListener("click",event=>{
-    if(event.target===loginModal) closeLogin();
-    if(event.target===joinModal) closeJoin();
-    if(event.target===socialModal) closeSocial();
-});
+// ================================
+// LOGIN
+// ================================
 
-const joinForm=document.getElementById("joinForm");
-if(joinForm){
-    joinForm.addEventListener("submit",async event=>{
+if (loginForm) {
+
+    loginForm.addEventListener("submit", async function (event) {
+
         event.preventDefault();
-        const fullName=document.getElementById("fullName").value.trim();
-        const phone=document.getElementById("phone").value.trim();
-        const birthDate=document.getElementById("birthDate").value;
-        const gender=document.getElementById("gender").value;
-        const education=document.getElementById("education").value;
-        const specialization=document.getElementById("specialization").value.trim();
-        const job=document.getElementById("job").value.trim();
-        const email=document.getElementById("email").value.trim();
-        const password=document.getElementById("password").value;
-        const confirmPassword=document.getElementById("confirmPassword").value;
 
-        if(!fullName||!phone||!birthDate||!gender||!education||!email||!password){
-            showToast("يرجى ملء جميع الحقول المطلوبة."); return;
+        const email =
+            document.getElementById("loginEmail").value.trim();
+
+        const password =
+            document.getElementById("loginPassword").value;
+
+        if (loginMessage) {
+            loginMessage.textContent = "جاري تسجيل الدخول...";
+            loginMessage.style.color = "#155dcc";
         }
-        if(password!==confirmPassword){showToast("كلمتا المرور غير متطابقتين.");return;}
-        if(password.length<6){showToast("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");return;}
 
-        try{
-            showToast("جاري إنشاء الحساب...");
-            const userCredential=await createUserWithEmailAndPassword(auth,email,password);
-            const user=userCredential.user;
-            await updateProfile(user,{displayName:fullName});
-            await setDoc(doc(db,"members",user.uid),{
-                uid:user.uid,fullName,phone,birthDate,gender,education,
-                specialization,job,email,role:"member",createdAt:serverTimestamp()
+        try {
+
+            const userCredential =
+                await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+            const user = userCredential.user;
+
+            // Check whether user is admin
+            const adminRef = doc(db, "admins", user.uid);
+            const adminSnapshot = await getDoc(adminRef);
+
+            closeLogin();
+
+            if (adminSnapshot.exists()) {
+
+                window.location.href = "admin.html";
+
+            } else {
+
+                window.location.href = "member.html";
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            let message =
+                "تعذر تسجيل الدخول. تأكد من البيانات.";
+
+            if (
+                error.code === "auth/invalid-credential" ||
+                error.code === "auth/wrong-password" ||
+                error.code === "auth/user-not-found"
+            ) {
+                message =
+                    "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+            }
+
+            if (error.code === "auth/too-many-requests") {
+                message =
+                    "تمت محاولات كثيرة. حاول لاحقاً.";
+            }
+
+            if (loginMessage) {
+                loginMessage.textContent = message;
+                loginMessage.style.color = "#d92d20";
+            }
+
+        }
+
+    });
+
+}
+
+
+// ================================
+// JOIN / REGISTER
+// ================================
+
+if (joinForm) {
+
+    joinForm.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const fullName =
+            document.getElementById("joinFullName").value.trim();
+
+        const phone =
+            document.getElementById("joinPhone").value.trim();
+
+        const birthDate =
+            document.getElementById("joinBirthDate").value;
+
+        const gender =
+            document.getElementById("joinGender").value;
+
+        const education =
+            document.getElementById("joinEducation").value;
+
+        const specialization =
+            document.getElementById("joinSpecialization").value.trim();
+
+        const job =
+            document.getElementById("joinJob").value.trim();
+
+        const email =
+            document.getElementById("joinEmail").value.trim();
+
+        const password =
+            document.getElementById("joinPassword").value;
+
+
+        if (joinMessage) {
+            joinMessage.textContent =
+                "جاري إنشاء الحساب...";
+            joinMessage.style.color = "#155dcc";
+        }
+
+
+        try {
+
+            const userCredential =
+                await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+            const user = userCredential.user;
+
+
+            // Update Firebase Auth display name
+            await updateProfile(user, {
+                displayName: fullName
             });
-            showToast("تم إنشاء الحساب بنجاح 🎉");
-            setTimeout(()=>window.location.href="member.html",900);
-        }catch(error){
+
+
+            // Save member information
+            await setDoc(
+                doc(db, "members", user.uid),
+                {
+                    uid: user.uid,
+                    fullName: fullName,
+                    phone: phone,
+                    birthDate: birthDate,
+                    gender: gender,
+                    education: education,
+                    specialization: specialization,
+                    job: job,
+                    email: email,
+                    createdAt: serverTimestamp()
+                }
+            );
+
+
+            if (joinMessage) {
+                joinMessage.textContent =
+                    "تم إنشاء الحساب بنجاح.";
+                joinMessage.style.color = "#039855";
+            }
+
+
+            showToast(
+                "تم إنشاء حسابك بنجاح 🎉"
+            );
+
+
+            setTimeout(() => {
+
+                closeJoin();
+
+                window.location.href = "member.html";
+
+            }, 900);
+
+
+        } catch (error) {
+
             console.error(error);
-            if(error.code==="auth/email-already-in-use") showToast("هذا البريد الإلكتروني مستخدم مسبقًا.");
-            else if(error.code==="auth/invalid-email") showToast("البريد الإلكتروني غير صحيح.");
-            else if(error.code==="auth/weak-password") showToast("كلمة المرور ضعيفة.");
-            else showToast("حدث خطأ أثناء إنشاء الحساب.");
+
+            let message =
+                "حدث خطأ أثناء إنشاء الحساب.";
+
+            if (error.code === "auth/email-already-in-use") {
+                message =
+                    "هذا البريد الإلكتروني مستخدم مسبقاً.";
+            }
+
+            if (error.code === "auth/weak-password") {
+                message =
+                    "كلمة المرور يجب أن تكون 6 أحرف على الأقل.";
+            }
+
+            if (error.code === "auth/invalid-email") {
+                message =
+                    "البريد الإلكتروني غير صحيح.";
+            }
+
+
+            if (joinMessage) {
+                joinMessage.textContent = message;
+                joinMessage.style.color = "#d92d20";
+            }
+
         }
+
     });
+
 }
 
-const loginForm=document.getElementById("loginForm");
-if(loginForm){
-    loginForm.addEventListener("submit",async event=>{
-        event.preventDefault();
-        const email=document.getElementById("loginEmail").value.trim();
-        const password=document.getElementById("loginPassword").value;
-        if(!email||!password){showToast("يرجى إدخال البريد الإلكتروني وكلمة المرور.");return;}
-        try{
-            showToast("جاري تسجيل الدخول...");
-            await signInWithEmailAndPassword(auth,email,password);
-            showToast("تم تسجيل الدخول بنجاح ✅");
-            setTimeout(()=>window.location.href="member.html",700);
-        }catch(error){
-            console.error(error);
-            if(["auth/invalid-credential","auth/wrong-password","auth/user-not-found"].includes(error.code))
-                showToast("البريد الإلكتروني أو كلمة المرور غير صحيحة.");
-            else if(error.code==="auth/invalid-email") showToast("البريد الإلكتروني غير صحيح.");
-            else showToast("حدث خطأ أثناء تسجيل الدخول.");
+
+// ================================
+// LOAD NEWS
+// ================================
+
+async function loadNews() {
+
+    const latestContainer =
+        document.getElementById("latestContainer");
+
+    if (!latestContainer) return;
+
+
+    try {
+
+        const newsQuery = query(
+            collection(db, "news"),
+            orderBy("createdAt", "desc"),
+            limit(6)
+        );
+
+        const snapshot =
+            await getDocs(newsQuery);
+
+
+        if (snapshot.empty) {
+
+            latestContainer.innerHTML = `
+                <div class="empty-message">
+                    لا توجد أخبار منشورة حالياً.
+                </div>
+            `;
+
+            return;
         }
-    });
+
+
+        latestContainer.innerHTML = "";
+
+
+        snapshot.forEach(docSnapshot => {
+
+            const data = docSnapshot.data();
+
+            latestContainer.appendChild(
+                createPostCard(data, "news")
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error("Error loading news:", error);
+
+        latestContainer.innerHTML = `
+            <div class="empty-message">
+                تعذر تحميل الأخبار حالياً.
+            </div>
+        `;
+
+    }
+
 }
+
+
+// ================================
+// LOAD CATEGORY POSTS
+// ================================
+
+async function loadCategoryPosts(
+    category,
+    elementId
+) {
+
+    const container =
+        document.querySelector(
+            `#${elementId} .category-posts`
+        );
+
+    if (!container) return;
+
+
+    try {
+
+        const postsQuery = query(
+            collection(db, "posts"),
+            where("category", "==", category),
+            orderBy("createdAt", "desc"),
+            limit(3)
+        );
+
+        const snapshot =
+            await getDocs(postsQuery);
+
+
+        if (snapshot.empty) {
+
+            container.innerHTML = `
+                <p class="empty-category">
+                    لا توجد منشورات حالياً.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        snapshot.forEach(docSnapshot => {
+
+            const data = docSnapshot.data();
+
+            container.appendChild(
+                createPostCard(data, "post")
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            `Error loading ${category}:`,
+            error
+        );
+
+        container.innerHTML = `
+            <p class="empty-category">
+                تعذر تحميل المحتوى.
+            </p>
+        `;
+
+    }
+
+}
+
+
+// ================================
+// LOAD ACTIVITIES
+// ================================
+
+async function loadActivities() {
+
+    const container =
+        document.querySelector(
+            "#activities .category-posts"
+        );
+
+    if (!container) return;
+
+
+    try {
+
+        const activitiesQuery = query(
+            collection(db, "activities"),
+            orderBy("createdAt", "desc"),
+            limit(3)
+        );
+
+        const snapshot =
+            await getDocs(activitiesQuery);
+
+
+        if (snapshot.empty) {
+
+            container.innerHTML = `
+                <p class="empty-category">
+                    لا توجد فعاليات حالياً.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        snapshot.forEach(docSnapshot => {
+
+            const data = docSnapshot.data();
+
+            container.appendChild(
+                createPostCard(data, "activity")
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading activities:",
+            error
+        );
+
+        container.innerHTML = `
+            <p class="empty-category">
+                تعذر تحميل الفعاليات.
+            </p>
+        `;
+
+    }
+
+}
+
+
+// ================================
+// CREATE CARD
+// ================================
+
+function createPostCard(data, type) {
+
+    const card =
+        document.createElement("article");
+
+    card.className = "post-card";
+
+
+    let imageHTML = "";
+
+    if (data.image) {
+
+        imageHTML = `
+            <div class="post-image">
+                <img
+                    src="${data.image}"
+                    alt="${escapeHTML(data.title || "منشور")}"
+                    loading="lazy"
+                >
+            </div>
+        `;
+
+    }
+
+
+    let dateText = "";
+
+    if (data.createdAt?.toDate) {
+
+        dateText =
+            data.createdAt
+                .toDate()
+                .toLocaleDateString("ar-IQ");
+
+    }
+
+
+    card.innerHTML = `
+
+        ${imageHTML}
+
+        <div class="post-card-content">
+
+            ${
+                dateText
+                    ? `<span class="post-date">${dateText}</span>`
+                    : ""
+            }
+
+            <h3>
+                ${escapeHTML(data.title || "بدون عنوان")}
+            </h3>
+
+            <p>
+                ${escapeHTML(
+                    data.content ||
+                    data.description ||
+                    "لا يوجد وصف."
+                )}
+            </p>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+// ================================
+// ESCAPE HTML
+// ================================
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// ================================
+// AUTH STATE
+// ================================
+
+onAuthStateChanged(auth, async user => {
+
+    const loginButton =
+        document.querySelector(".login-btn");
+
+    if (!loginButton) return;
+
+
+    if (user) {
+
+        loginButton.textContent =
+            "حسابي";
+
+        loginButton.onclick = function () {
+
+            window.location.href =
+                "member.html";
+
+        };
+
+    } else {
+
+        loginButton.textContent =
+            "تسجيل الدخول";
+
+        loginButton.onclick =
+            window.openLogin;
+
+    }
+
+});
+
+
+// ================================
+// CURRENT YEAR
+// ================================
+
+const currentYear =
+    document.getElementById("currentYear");
+
+if (currentYear) {
+
+    currentYear.textContent =
+        new Date().getFullYear();
+
+}
+
+
+// ================================
+// LOAD EVERYTHING
+// ================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        await loadNews();
+
+        await loadCategoryPosts(
+            "health",
+            "health"
+        );
+
+        await loadCategoryPosts(
+            "environment",
+            "environment"
+        );
+
+        await loadCategoryPosts(
+            "articles",
+            "articles"
+        );
+
+        await loadActivities();
+
+    }
+);
